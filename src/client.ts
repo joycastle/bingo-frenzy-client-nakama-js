@@ -39,6 +39,8 @@ import {
   ApiStorageObjectAcks,
   ApiStorageObjectList,
   ApiStorageObjects,
+  ApiTournamentList,
+  ApiTournamentRecordList,
   ApiUpdateAccountRequest,
   ApiUpdateGroupRequest,
   ApiUsers,
@@ -171,18 +173,84 @@ export interface LeaderboardRecord {
   update_time?: string;
   // The username of the score owner, if the owner is a user.
   username?: string;
+  // The maximum number of score updates allowed by the owner.
+  max_num_score?: number;
 }
 
 /** A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
 export interface LeaderboardRecordList {
   // The cursor to send when retireving the next page, if any.
   next_cursor?: string;
-  // A batched set of leaderobard records belonging to specified owners.
+  // A batched set of leaderboard records belonging to specified owners.
   owner_records?: Array<LeaderboardRecord>;
   // The cursor to send when retrieving the previous page, if any.
   prev_cursor?: string;
   // A list of leaderboard records.
   records?: Array<LeaderboardRecord>;
+}
+
+/** A Tournament on the server. */
+export interface Tournament {
+  // The ID of the tournament.
+  id?: string;
+  // The title for the tournament.
+  title?: string;
+  // The description of the tournament. May be blank.
+  description?: string;
+  // The category of the tournament. e.g. "vip" could be category 1.
+  category?: number;
+  // ASC or DESC sort mode of scores in the tournament.
+  sort_order?: number;
+  // The current number of players in the tournament.
+  size?: number;
+  // The maximum number of players for the tournament.
+  max_size?: number;
+  // The maximum score updates allowed per player for the current tournament.
+  max_num_score?: number;
+  // True if the tournament is active and can enter. A computed value.
+  can_enter?: boolean;
+  // The UNIX timestamp when the tournament stops being active until next reset. A computed value.
+  end_active?: number;
+  // The UNIX timestamp when the tournament is next playable. A computed value.
+  next_reset?: number;
+  // Additional information stored as a JSON object.
+  metadata?: object;
+  // The UNIX time when the tournament was created.
+  create_time?: string;
+  // The UNIX time when the tournament will start.
+  start_time?: string;
+  // The UNIX time when the tournament will be stopped.
+  end_time?: string;
+}
+
+/** A list of tournaments. */
+export interface TournamentList {
+  // The list of tournaments returned.
+  tournaments?: Array<Tournament>;
+  // A pagination cursor (optional).
+  cursor?: string,
+}
+
+/** A set of tournament records, may be part of a tournament records page or a batch of individual records. */
+export interface TournamentRecordList {
+  // The cursor to send when retireving the next page, if any.
+  next_cursor?: string;
+  // A batched set of tournament records belonging to specified owners.
+  owner_records?: Array<LeaderboardRecord>;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+  // A list of tournament records.
+  records?: Array<LeaderboardRecord>;
+}
+
+/** Record values to write. */
+export interface WriteTournamentRecord {
+  // Optional record metadata.
+  metadata?: object;
+  // The score value to submit.
+  score?: string;
+  // An optional secondary value.
+  subscore?: string;
 }
 
 /** Record values to write. */
@@ -1211,6 +1279,13 @@ export class Client {
     });
   }
 
+  joinTournament(session: Session, tournamentId: string): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.joinTournament(tournamentId, {}).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
+
   /** Kick users from a group, or decline their join requests. */
   kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
@@ -1528,7 +1603,8 @@ export class Client {
             score: Number(o.score),
             subscore: Number(o.subscore),
             update_time: o.update_time,
-            username: o.username
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
           })
         })
       }
@@ -1545,7 +1621,58 @@ export class Client {
             score: Number(o.score),
             subscore: Number(o.subscore),
             update_time: o.update_time,
-            username: o.username
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      return Promise.resolve(list);
+    });
+  }
+
+  listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number): Promise<LeaderboardRecordList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit).then((response: ApiLeaderboardRecordList) => {
+      var list: LeaderboardRecordList = {
+        next_cursor: response.next_cursor,
+        prev_cursor: response.prev_cursor,
+        owner_records: [],
+        records: []
+      };
+
+      if (response.owner_records != null) {
+        response.owner_records!.forEach(o => {
+          list.owner_records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      if (response.records != null) {
+        response.records!.forEach(o => {
+          list.records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
           })
         })
       }
@@ -1615,6 +1742,143 @@ export class Client {
         })
       });
       return Promise.resolve(result);
+    });
+  }
+
+  /** List current or upcoming tournaments. */
+  listTournaments(session: Session, full?: boolean, ownerId?: string, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor).then((response: ApiTournamentList) => {
+      var list: TournamentList = {
+        cursor: response.cursor,
+        tournaments: [],
+      };
+
+      if (response.tournaments != null) {
+        response.tournaments!.forEach(o => {
+          list.tournaments!.push({
+            id: o.id,
+            title: o.title,
+            description: o.description,
+            category: Number(o.category),
+            sort_order: Number(o.sort_order),
+            size: Number(o.size),
+            max_size: Number(o.max_size),
+            max_num_score: Number(o.max_num_score),
+            can_enter: o.can_enter,
+            end_active: Number(o.end_active),
+            next_reset: Number(o.next_reset),
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            create_time: o.create_time,
+            start_time: o.start_time,
+            end_time: o.end_time,
+          })
+        })
+      }
+
+      return Promise.resolve(list);
+    });
+  }
+
+  /** List tournament records from a given tournament. */
+  listTournamentRecords(session: Session, tournamentId: string, ownerId?: string, limit?: number): Promise<TournamentRecordList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then((response: ApiTournamentRecordList) => {
+      var list: TournamentRecordList = {
+        next_cursor: response.next_cursor,
+        prev_cursor: response.prev_cursor,
+        owner_records: [],
+        records: []
+      };
+
+      if (response.owner_records != null) {
+        response.owner_records!.forEach(o => {
+          list.owner_records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      if (response.records != null) {
+        response.records!.forEach(o => {
+          list.records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      return Promise.resolve(list);
+    });
+  }
+
+  /** List tournament records from a given tournament around the owner. */
+  listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number): Promise<TournamentRecordList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then((response: ApiTournamentRecordList) => {
+      var list: TournamentRecordList = {
+        next_cursor: response.next_cursor,
+        prev_cursor: response.prev_cursor,
+        owner_records: [],
+        records: []
+      };
+
+      if (response.owner_records != null) {
+        response.owner_records!.forEach(o => {
+          list.owner_records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      if (response.records != null) {
+        response.records!.forEach(o => {
+          list.records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username,
+            max_num_score: Number(o.max_num_score),
+          })
+        })
+      }
+
+      return Promise.resolve(list);
     });
   }
 
@@ -1820,7 +2084,8 @@ export class Client {
         score: Number(response.score),
         subscore: Number(response.subscore),
         update_time: response.update_time,
-        username: response.username
+        username: response.username,
+        max_num_score: Number(response.max_num_score),
       });
     });
   }
@@ -1842,5 +2107,28 @@ export class Client {
     })
 
     return this.apiClient.writeStorageObjects(request);
+  }
+
+  /** Write a record to a tournament. */
+  writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.writeTournamentRecord(tournamentId, {
+      metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
+      score: request.score,
+      subscore: request.subscore
+    }).then((response: ApiLeaderboardRecord) => {
+      return Promise.resolve({
+        expiry_time: response.expiry_time,
+        leaderboard_id: response.leaderboard_id,
+        metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+        num_score: response.num_score,
+        owner_id: response.owner_id,
+        score: Number(response.score),
+        subscore: Number(response.subscore),
+        update_time: response.update_time,
+        username: response.username,
+        max_num_score: Number(response.max_num_score),
+      });
+    });
   }
 };

@@ -736,13 +736,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateCustom: function (body, options) {
+        authenticateCustom: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/custom";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -784,13 +787,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateDevice: function (body, options) {
+        authenticateDevice: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/device";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -832,13 +838,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateEmail: function (body, options) {
+        authenticateEmail: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/email";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -880,13 +889,17 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateFacebook: function (body, options) {
+        authenticateFacebook: function (body, create, username, import_, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/facebook";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+                'import': import_,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -928,13 +941,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateGameCenter: function (body, options) {
+        authenticateGameCenter: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/gamecenter";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -976,13 +992,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateGoogle: function (body, options) {
+        authenticateGoogle: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/google";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -1024,13 +1043,16 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        authenticateSteam: function (body, options) {
+        authenticateSteam: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/authenticate/steam";
-            var queryParams = {};
+            var queryParams = {
+                create: create,
+                username: username,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -1216,13 +1238,15 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        linkFacebook: function (body, options) {
+        linkFacebook: function (body, import_, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/link/facebook";
-            var queryParams = {};
+            var queryParams = {
+                'import': import_,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -1975,13 +1999,15 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        importFacebookFriends: function (body, options) {
+        importFacebookFriends: function (body, reset, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/friend/facebook";
-            var queryParams = {};
+            var queryParams = {
+                reset: reset,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -2659,6 +2685,60 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
+        listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, options) {
+            if (options === void 0) { options = {}; }
+            if (leaderboardId === null || leaderboardId === undefined) {
+                throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+            }
+            if (ownerId === null || ownerId === undefined) {
+                throw new Error("'ownerId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
+                .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
+                .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+            var queryParams = {
+                limit: limit,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
         listMatches: function (limit, authoritative, label, minSize, maxSize, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/match";
@@ -3115,6 +3195,265 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 limit: limit,
                 cursor: cursor,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        listTournaments: function (categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor, options) {
+            if (options === void 0) { options = {}; }
+            var urlPath = "/v2/tournament";
+            var queryParams = {
+                category_start: categoryStart,
+                category_end: categoryEnd,
+                start_time: startTime,
+                end_time: endTime,
+                full: full,
+                limit: limit,
+                owner_id: ownerId,
+                cursor: cursor,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, options) {
+            if (options === void 0) { options = {}; }
+            if (tournamentId === null || tournamentId === undefined) {
+                throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/tournament/{tournament_id}"
+                .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+            var queryParams = {
+                owner_ids: ownerIds,
+                limit: limit,
+                cursor: cursor,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        writeTournamentRecord: function (tournamentId, body, options) {
+            if (options === void 0) { options = {}; }
+            if (tournamentId === null || tournamentId === undefined) {
+                throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+            }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/tournament/{tournament_id}"
+                .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+            var queryParams = {};
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "PUT" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            fetchOptions.body = JSON.stringify(body || {});
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        joinTournament: function (tournamentId, options) {
+            if (options === void 0) { options = {}; }
+            if (tournamentId === null || tournamentId === undefined) {
+                throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/tournament/{tournament_id}/join"
+                .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+            var queryParams = {};
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "POST" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, options) {
+            if (options === void 0) { options = {}; }
+            if (tournamentId === null || tournamentId === undefined) {
+                throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+            }
+            if (ownerId === null || ownerId === undefined) {
+                throw new Error("'ownerId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
+                .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
+                .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+            var queryParams = {
+                limit: limit,
             };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -4222,6 +4561,12 @@ var Client = (function () {
             return response !== undefined;
         });
     };
+    Client.prototype.joinTournament = function (session, tournamentId) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.joinTournament(tournamentId, {}).then(function (response) {
+            return response !== undefined;
+        });
+    };
     Client.prototype.kickGroupUsers = function (session, groupId, ids) {
         var _this = this;
         this.configuration.bearerToken = (session && session.token);
@@ -4497,7 +4842,8 @@ var Client = (function () {
                         score: Number(o.score),
                         subscore: Number(o.subscore),
                         update_time: o.update_time,
-                        username: o.username
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
                     });
                 });
             }
@@ -4513,7 +4859,54 @@ var Client = (function () {
                         score: Number(o.score),
                         subscore: Number(o.subscore),
                         update_time: o.update_time,
-                        username: o.username
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            return Promise.resolve(list);
+        });
+    };
+    Client.prototype.listLeaderboardRecordsAroundOwner = function (session, leaderboardId, ownerId, limit) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit).then(function (response) {
+            var list = {
+                next_cursor: response.next_cursor,
+                prev_cursor: response.prev_cursor,
+                owner_records: [],
+                records: []
+            };
+            if (response.owner_records != null) {
+                response.owner_records.forEach(function (o) {
+                    list.owner_records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            if (response.records != null) {
+                response.records.forEach(function (o) {
+                    list.records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
                     });
                 });
             }
@@ -4572,6 +4965,129 @@ var Client = (function () {
                 });
             });
             return Promise.resolve(result);
+        });
+    };
+    Client.prototype.listTournaments = function (session, full, ownerId, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor).then(function (response) {
+            var list = {
+                cursor: response.cursor,
+                tournaments: [],
+            };
+            if (response.tournaments != null) {
+                response.tournaments.forEach(function (o) {
+                    list.tournaments.push({
+                        id: o.id,
+                        title: o.title,
+                        description: o.description,
+                        category: Number(o.category),
+                        sort_order: Number(o.sort_order),
+                        size: Number(o.size),
+                        max_size: Number(o.max_size),
+                        max_num_score: Number(o.max_num_score),
+                        can_enter: o.can_enter,
+                        end_active: Number(o.end_active),
+                        next_reset: Number(o.next_reset),
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        create_time: o.create_time,
+                        start_time: o.start_time,
+                        end_time: o.end_time,
+                    });
+                });
+            }
+            return Promise.resolve(list);
+        });
+    };
+    Client.prototype.listTournamentRecords = function (session, tournamentId, ownerId, limit) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then(function (response) {
+            var list = {
+                next_cursor: response.next_cursor,
+                prev_cursor: response.prev_cursor,
+                owner_records: [],
+                records: []
+            };
+            if (response.owner_records != null) {
+                response.owner_records.forEach(function (o) {
+                    list.owner_records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            if (response.records != null) {
+                response.records.forEach(function (o) {
+                    list.records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            return Promise.resolve(list);
+        });
+    };
+    Client.prototype.listTournamentRecordsAroundOwner = function (session, tournamentId, ownerId, limit) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then(function (response) {
+            var list = {
+                next_cursor: response.next_cursor,
+                prev_cursor: response.prev_cursor,
+                owner_records: [],
+                records: []
+            };
+            if (response.owner_records != null) {
+                response.owner_records.forEach(function (o) {
+                    list.owner_records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            if (response.records != null) {
+                response.records.forEach(function (o) {
+                    list.records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username,
+                        max_num_score: Number(o.max_num_score),
+                    });
+                });
+            }
+            return Promise.resolve(list);
         });
     };
     Client.prototype.promoteGroupUsers = function (session, groupId, ids) {
@@ -4746,7 +5262,8 @@ var Client = (function () {
                 score: Number(response.score),
                 subscore: Number(response.subscore),
                 update_time: response.update_time,
-                username: response.username
+                username: response.username,
+                max_num_score: Number(response.max_num_score),
             });
         });
     };
@@ -4764,6 +5281,27 @@ var Client = (function () {
             });
         });
         return this.apiClient.writeStorageObjects(request);
+    };
+    Client.prototype.writeTournamentRecord = function (session, tournamentId, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.writeTournamentRecord(tournamentId, {
+            metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
+            score: request.score,
+            subscore: request.subscore
+        }).then(function (response) {
+            return Promise.resolve({
+                expiry_time: response.expiry_time,
+                leaderboard_id: response.leaderboard_id,
+                metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+                num_score: response.num_score,
+                owner_id: response.owner_id,
+                score: Number(response.score),
+                subscore: Number(response.subscore),
+                update_time: response.update_time,
+                username: response.username,
+                max_num_score: Number(response.max_num_score),
+            });
+        });
     };
     return Client;
 }());
