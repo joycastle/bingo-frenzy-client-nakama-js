@@ -3312,7 +3312,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** List current or upcoming tournaments. */
-    listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, full?: boolean, limit?: number, ownerId?: string, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
+    listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
       const urlPath = "/v2/tournament";
 
       const queryParams = {
@@ -3320,9 +3320,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         category_end: categoryEnd,
         start_time: startTime,
         end_time: endTime,
-        full: full,
         limit: limit,
-        owner_id: ownerId,
         cursor: cursor,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)

@@ -1746,9 +1746,9 @@ export class Client {
   }
 
   /** List current or upcoming tournaments. */
-  listTournaments(session: Session, full?: boolean, ownerId?: string, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList> {
+  listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor).then((response: ApiTournamentList) => {
+    return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response: ApiTournamentList) => {
       var list: TournamentList = {
         cursor: response.cursor,
         tournaments: [],
