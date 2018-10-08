@@ -339,7 +339,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options?: any): Promise<ProtobufEmpty>;
     listStorageObjects(collection: string, userId?: string | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     listStorageObjects2(collection: string, userId: string, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
-    listTournaments(categoryStart?: number | undefined, categoryEnd?: number | undefined, startTime?: number | undefined, endTime?: number | undefined, full?: boolean | undefined, limit?: number | undefined, ownerId?: string | undefined, cursor?: string | undefined, options?: any): Promise<ApiTournamentList>;
+    listTournaments(categoryStart?: number | undefined, categoryEnd?: number | undefined, startTime?: number | undefined, endTime?: number | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiTournamentList>;
     listTournamentRecords(tournamentId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiTournamentRecordList>;
     writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     joinTournament(tournamentId: string, options?: any): Promise<ProtobufEmpty>;

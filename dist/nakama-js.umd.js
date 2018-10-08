@@ -3238,7 +3238,7 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        listTournaments: function (categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor, options) {
+        listTournaments: function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/tournament";
             var queryParams = {
@@ -3246,9 +3246,7 @@ var NakamaApi = function (configuration) {
                 category_end: categoryEnd,
                 start_time: startTime,
                 end_time: endTime,
-                full: full,
                 limit: limit,
-                owner_id: ownerId,
                 cursor: cursor,
             };
             var urlQuery = "?" + Object.keys(queryParams)
@@ -4388,11 +4386,11 @@ var Client = (function () {
                 create_time: response.create_time,
                 creator_id: response.creator_id,
                 description: response.description,
-                edge_count: response.edge_count,
+                edge_count: response.edge_count ? Number(response.edge_count) : 0,
                 id: response.id,
                 lang_tag: response.lang_tag,
-                max_count: response.max_count,
-                metadata: response.metadata ? JSON.parse(response.metadata) : null,
+                max_count: response.max_count ? Number(response.max_count) : 0,
+                metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
                 name: response.name,
                 open: response.open,
                 update_time: response.update_time
@@ -4539,7 +4537,7 @@ var Client = (function () {
                     avatar_url: u.avatar_url,
                     create_time: u.create_time,
                     display_name: u.display_name,
-                    edge_count: u.edge_count,
+                    edge_count: u.edge_count ? Number(u.edge_count) : 0,
                     facebook_id: u.facebook_id,
                     gamecenter_id: u.gamecenter_id,
                     google_id: u.google_id,
@@ -4551,7 +4549,7 @@ var Client = (function () {
                     timezone: u.timezone,
                     update_time: u.update_time,
                     username: u.username,
-                    metadata: u.metadata ? JSON.parse(u.metadata) : null
+                    metadata: u.metadata ? JSON.parse(u.metadata) : undefined
                 });
             });
             return Promise.resolve(result);
@@ -4638,14 +4636,14 @@ var Client = (function () {
             response.messages.forEach(function (m) {
                 result.messages.push({
                     channel_id: m.channel_id,
-                    code: m.code,
+                    code: m.code ? Number(m.code) : 0,
                     create_time: m.create_time,
                     message_id: m.message_id,
                     persistent: m.persistent,
                     sender_id: m.sender_id,
                     update_time: m.update_time,
                     username: m.username,
-                    content: m.content ? JSON.parse(m.content) : null
+                    content: m.content ? JSON.parse(m.content) : undefined
                 });
             });
             return Promise.resolve(result);
@@ -4666,7 +4664,7 @@ var Client = (function () {
                         avatar_url: gu.user.avatar_url,
                         create_time: gu.user.create_time,
                         display_name: gu.user.display_name,
-                        edge_count: gu.user.edge_count,
+                        edge_count: gu.user.edge_count ? Number(gu.user.edge_count) : 0,
                         facebook_id: gu.user.facebook_id,
                         gamecenter_id: gu.user.gamecenter_id,
                         google_id: gu.user.google_id,
@@ -4678,9 +4676,9 @@ var Client = (function () {
                         timezone: gu.user.timezone,
                         update_time: gu.user.update_time,
                         username: gu.user.username,
-                        metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : null
+                        metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : undefined
                     },
-                    state: gu.state
+                    state: gu.state ? Number(gu.state) : 0
                 });
             });
             return Promise.resolve(result);
@@ -4702,16 +4700,16 @@ var Client = (function () {
                         create_time: ug.group.create_time,
                         creator_id: ug.group.creator_id,
                         description: ug.group.description,
-                        edge_count: ug.group.edge_count,
+                        edge_count: ug.group.edge_count ? Number(ug.group.edge_count) : 0,
                         id: ug.group.id,
                         lang_tag: ug.group.lang_tag,
                         max_count: ug.group.max_count,
-                        metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : null,
+                        metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : undefined,
                         name: ug.group.name,
                         open: ug.group.open,
                         update_time: ug.group.update_time
                     },
-                    state: ug.state
+                    state: ug.state ? Number(ug.state) : 0
                 });
             });
             return Promise.resolve(result);
@@ -4733,11 +4731,11 @@ var Client = (function () {
                     create_time: ug.create_time,
                     creator_id: ug.creator_id,
                     description: ug.description,
-                    edge_count: ug.edge_count,
+                    edge_count: ug.edge_count ? Number(ug.edge_count) : 0,
                     id: ug.id,
                     lang_tag: ug.lang_tag,
                     max_count: ug.max_count,
-                    metadata: ug.metadata ? JSON.parse(ug.metadata) : null,
+                    metadata: ug.metadata ? JSON.parse(ug.metadata) : undefined,
                     name: ug.name,
                     open: ug.open,
                     update_time: ug.update_time
@@ -4803,7 +4801,7 @@ var Client = (function () {
                         avatar_url: f.user.avatar_url,
                         create_time: f.user.create_time,
                         display_name: f.user.display_name,
-                        edge_count: f.user.edge_count,
+                        edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
                         facebook_id: f.user.facebook_id,
                         gamecenter_id: f.user.gamecenter_id,
                         google_id: f.user.google_id,
@@ -4815,7 +4813,7 @@ var Client = (function () {
                         timezone: f.user.timezone,
                         update_time: f.user.update_time,
                         username: f.user.username,
-                        metadata: f.user.metadata ? JSON.parse(f.user.metadata) : null
+                        metadata: f.user.metadata ? JSON.parse(f.user.metadata) : undefined
                     },
                     state: f.state
                 });
@@ -4838,14 +4836,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -4855,14 +4853,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -4884,14 +4882,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -4901,14 +4899,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -4931,7 +4929,7 @@ var Client = (function () {
             }
             response.notifications.forEach(function (n) {
                 result.notifications.push({
-                    code: n.code,
+                    code: n.code ? Number(n.code) : 0,
                     create_time: n.create_time,
                     id: n.id,
                     persistent: n.persistent,
@@ -4957,9 +4955,9 @@ var Client = (function () {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
-                    permission_read: o.permission_read,
-                    permission_write: o.permission_write,
-                    value: o.value ? JSON.parse(o.value) : null,
+                    permission_read: o.permission_read ? Number(o.permission_read) : 0,
+                    permission_write: o.permission_write ? Number(o.permission_write) : 0,
+                    value: o.value ? JSON.parse(o.value) : undefined,
                     version: o.version,
                     user_id: o.user_id,
                     create_time: o.create_time,
@@ -4969,9 +4967,9 @@ var Client = (function () {
             return Promise.resolve(result);
         });
     };
-    Client.prototype.listTournaments = function (session, full, ownerId, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
+    Client.prototype.listTournaments = function (session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, full, limit, ownerId, cursor).then(function (response) {
+        return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
             var list = {
                 cursor: response.cursor,
                 tournaments: [],
@@ -4982,14 +4980,14 @@ var Client = (function () {
                         id: o.id,
                         title: o.title,
                         description: o.description,
-                        category: Number(o.category),
-                        sort_order: Number(o.sort_order),
-                        size: Number(o.size),
-                        max_size: Number(o.max_size),
-                        max_num_score: Number(o.max_num_score),
+                        category: o.category ? Number(o.category) : 0,
+                        sort_order: o.sort_order ? Number(o.sort_order) : 0,
+                        size: o.size ? Number(o.size) : 0,
+                        max_size: o.max_size ? Number(o.max_size) : 0,
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                         can_enter: o.can_enter,
-                        end_active: Number(o.end_active),
-                        next_reset: Number(o.next_reset),
+                        end_active: o.end_active ? Number(o.end_active) : 0,
+                        next_reset: o.next_reset ? Number(o.next_reset) : 0,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
                         create_time: o.create_time,
                         start_time: o.start_time,
@@ -5000,9 +4998,9 @@ var Client = (function () {
             return Promise.resolve(list);
         });
     };
-    Client.prototype.listTournamentRecords = function (session, tournamentId, ownerId, limit) {
+    Client.prototype.listTournamentRecords = function (session, tournamentId, ownerIds, limit, cursor) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then(function (response) {
+        return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor).then(function (response) {
             var list = {
                 next_cursor: response.next_cursor,
                 prev_cursor: response.prev_cursor,
@@ -5015,14 +5013,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -5032,14 +5030,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -5061,14 +5059,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -5078,14 +5076,14 @@ var Client = (function () {
                         expiry_time: o.expiry_time,
                         leaderboard_id: o.leaderboard_id,
                         metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                        num_score: o.num_score,
+                        num_score: o.num_score ? Number(o.num_score) : 0,
                         owner_id: o.owner_id,
-                        rank: Number(o.rank),
-                        score: Number(o.score),
-                        subscore: Number(o.subscore),
+                        rank: o.rank ? Number(o.rank) : 0,
+                        score: o.score ? Number(o.score) : 0,
+                        subscore: o.subscore ? Number(o.subscore) : 0,
                         update_time: o.update_time,
                         username: o.username,
-                        max_num_score: Number(o.max_num_score),
+                        max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                     });
                 });
             }
@@ -5152,9 +5150,9 @@ var Client = (function () {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
-                    permission_read: o.permission_read,
-                    permission_write: o.permission_write,
-                    value: o.value ? JSON.parse(o.value) : null,
+                    permission_read: o.permission_read ? Number(o.permission_read) : 0,
+                    permission_write: o.permission_write ? Number(o.permission_write) : 0,
+                    value: o.value ? JSON.parse(o.value) : undefined,
                     version: o.version,
                     user_id: o.user_id,
                     create_time: o.create_time,
@@ -5169,7 +5167,7 @@ var Client = (function () {
         return this.apiClient.rpcFunc(id, JSON.stringify(input)).then(function (response) {
             return Promise.resolve({
                 id: response.id,
-                payload: (!response.payload) ? null : JSON.parse(response.payload)
+                payload: (!response.payload) ? undefined : JSON.parse(response.payload)
             });
         });
     };
@@ -5187,7 +5185,7 @@ var Client = (function () {
             _this.configuration.username = _this.serverkey;
             return Promise.resolve({
                 id: response.id,
-                payload: (!response.payload) ? null : JSON.parse(response.payload)
+                payload: (!response.payload) ? undefined : JSON.parse(response.payload)
             });
         }).catch(function (err) {
             _this.configuration.username = _this.serverkey;
@@ -5259,13 +5257,14 @@ var Client = (function () {
                 expiry_time: response.expiry_time,
                 leaderboard_id: response.leaderboard_id,
                 metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
-                num_score: response.num_score,
+                num_score: response.num_score ? Number(response.num_score) : 0,
                 owner_id: response.owner_id,
-                score: Number(response.score),
-                subscore: Number(response.subscore),
+                score: response.score ? Number(response.score) : 0,
+                subscore: response.subscore ? Number(response.subscore) : 0,
                 update_time: response.update_time,
                 username: response.username,
-                max_num_score: Number(response.max_num_score),
+                max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
+                rank: response.rank ? Number(response.rank) : 0,
             });
         });
     };
@@ -5295,13 +5294,14 @@ var Client = (function () {
                 expiry_time: response.expiry_time,
                 leaderboard_id: response.leaderboard_id,
                 metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
-                num_score: response.num_score,
+                num_score: response.num_score ? Number(response.num_score) : 0,
                 owner_id: response.owner_id,
-                score: Number(response.score),
-                subscore: Number(response.subscore),
+                score: response.score ? Number(response.score) : 0,
+                subscore: response.subscore ? Number(response.subscore) : 0,
                 update_time: response.update_time,
                 username: response.username,
-                max_num_score: Number(response.max_num_score),
+                max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
+                rank: response.rank ? Number(response.rank) : 0,
             });
         });
     };

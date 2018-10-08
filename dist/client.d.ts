@@ -269,8 +269,8 @@ export declare class Client {
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
-    listTournaments(session: Session, full?: boolean, ownerId?: string, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;
-    listTournamentRecords(session: Session, tournamentId: string, ownerId?: string, limit?: number): Promise<TournamentRecordList>;
+    listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;
+    listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<TournamentRecordList>;
     listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number): Promise<TournamentRecordList>;
     promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
