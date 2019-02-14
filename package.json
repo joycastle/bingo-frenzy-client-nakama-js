@@ -47,5 +47,8 @@
   "dependencies": {
     "Base64": "^1.0.1",
     "whatwg-fetch": "^2.0.3"
+  },
+  "resolutions": {
+    "**/event-stream": "^4.0.1"
   }
 }

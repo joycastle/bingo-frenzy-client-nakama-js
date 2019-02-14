@@ -493,6 +493,8 @@ export class DefaultSocket implements Socket {
     return new Promise((resolve, reject) => {
       if (this.socket === undefined) {
         reject("Socket connection has not been established yet.");
+      } else if (this.socket.readyState !== 1) {
+        reject("Socket connection has not been open yet.");
       } else {
         if (m.match_data_send) {
           m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));

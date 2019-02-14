@@ -3777,6 +3777,9 @@
               if (_this.socket === undefined) {
                   reject("Socket connection has not been established yet.");
               }
+              else if (_this.socket.readyState !== 1) {
+                  reject("Socket connection has not been open yet.");
+              }
               else {
                   if (m.match_data_send) {
                       m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
