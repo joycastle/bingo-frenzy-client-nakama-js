@@ -324,8 +324,8 @@ export class DefaultSocket implements Socket {
     this.socket = socket;
 
     socket.onclose = (evt: Event) => {
-      this.ondisconnect(evt);
       this.socket = undefined;
+      this.ondisconnect(evt);
     }
 
     socket.onerror = (evt: Event) => {
@@ -413,6 +413,7 @@ export class DefaultSocket implements Socket {
   disconnect(fireDisconnectEvent: boolean = true) {
     if (this.socket !== undefined) {
       this.socket.close();
+      this.socket = undefined;
     }
     if (fireDisconnectEvent) {
       this.ondisconnect(<Event>{});

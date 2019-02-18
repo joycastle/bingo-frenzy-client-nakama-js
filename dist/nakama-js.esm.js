@@ -3610,8 +3610,8 @@ var DefaultSocket = (function () {
         var socket = new WebSocket(url);
         this.socket = socket;
         socket.onclose = function (evt) {
-            _this.ondisconnect(evt);
             _this.socket = undefined;
+            _this.ondisconnect(evt);
         };
         socket.onerror = function (evt) {
             _this.onerror(evt);
@@ -3704,6 +3704,7 @@ var DefaultSocket = (function () {
         if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
         if (this.socket !== undefined) {
             this.socket.close();
+            this.socket = undefined;
         }
         if (fireDisconnectEvent) {
             this.ondisconnect({});
