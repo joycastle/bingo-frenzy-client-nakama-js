@@ -3602,7 +3602,7 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
         if (createStatus === void 0) { createStatus = false; }
-        if (this.socket != undefined) {
+        if (this.socket !== undefined && this.socket.readyState === 1) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
@@ -3610,13 +3610,15 @@ var DefaultSocket = (function () {
         var socket = new WebSocket(url);
         this.socket = socket;
         socket.onclose = function (evt) {
-            _this.socket = undefined;
+            if (_this.socket !== socket) {
+                return;
+            }
             _this.ondisconnect(evt);
         };
-        socket.onerror = function (evt) {
-            _this.onerror(evt);
-        };
         socket.onmessage = function (evt) {
+            if (_this.socket !== socket) {
+                return;
+            }
             var message = JSON.parse(evt.data);
             if (_this.verbose && window && window.console) {
                 console.log("Response: %o", message);
@@ -3688,15 +3690,20 @@ var DefaultSocket = (function () {
         };
         return new Promise(function (resolve, reject) {
             socket.onopen = function (evt) {
+                if (_this.socket !== socket) {
+                    return;
+                }
                 if (_this.verbose && window && window.console) {
                     console.log(evt);
                 }
                 resolve(session);
             };
             socket.onerror = function (evt) {
+                if (_this.socket !== socket) {
+                    return;
+                }
                 reject(evt);
                 socket.close();
-                _this.socket = undefined;
             };
         });
     };
@@ -3704,7 +3711,6 @@ var DefaultSocket = (function () {
         if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
         if (this.socket !== undefined) {
             this.socket.close();
-            this.socket = undefined;
         }
         if (fireDisconnectEvent) {
             this.ondisconnect({});

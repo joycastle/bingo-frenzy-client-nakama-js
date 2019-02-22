@@ -314,7 +314,7 @@ export class DefaultSocket implements Socket {
   }
 
   connect(session: Session, createStatus: boolean = false): Promise<Session> {
-    if (this.socket != undefined) {
+    if (this.socket !== undefined && this.socket.readyState === 1) {
       return Promise.resolve(session);
     }
 
@@ -324,15 +324,16 @@ export class DefaultSocket implements Socket {
     this.socket = socket;
 
     socket.onclose = (evt: Event) => {
-      this.socket = undefined;
+      if (this.socket !== socket) {
+        return;
+      }
       this.ondisconnect(evt);
     }
 
-    socket.onerror = (evt: Event) => {
-      this.onerror(evt);
-    }
-
     socket.onmessage = (evt: MessageEvent) => {
+      if (this.socket !== socket) {
+        return;
+      }
       const message = JSON.parse(evt.data);
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
@@ -397,15 +398,20 @@ export class DefaultSocket implements Socket {
 
     return new Promise((resolve, reject) => {
       socket.onopen = (evt: Event) => {
+        if (this.socket !== socket) {
+          return;
+        }
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
         resolve(session);
       }
       socket.onerror = (evt: Event) => {
+        if (this.socket !== socket) {
+          return;
+        }
         reject(evt);
         socket.close();
-        this.socket = undefined;
       }
     });
   }
@@ -413,7 +419,6 @@ export class DefaultSocket implements Socket {
   disconnect(fireDisconnectEvent: boolean = true) {
     if (this.socket !== undefined) {
       this.socket.close();
-      this.socket = undefined;
     }
     if (fireDisconnectEvent) {
       this.ondisconnect(<Event>{});
