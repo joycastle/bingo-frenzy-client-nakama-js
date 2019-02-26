@@ -612,7 +612,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -656,7 +656,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -704,7 +704,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -755,7 +755,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -806,7 +806,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -857,7 +857,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -909,7 +909,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -960,7 +960,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1011,7 +1011,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1062,7 +1062,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1110,7 +1110,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1158,7 +1158,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1206,7 +1206,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1256,7 +1256,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1304,7 +1304,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1352,7 +1352,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1400,7 +1400,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1448,7 +1448,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1496,7 +1496,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1544,7 +1544,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1592,7 +1592,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1640,7 +1640,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1688,7 +1688,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1736,7 +1736,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1788,7 +1788,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1835,7 +1835,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1879,7 +1879,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1923,7 +1923,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -1967,7 +1967,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2017,7 +2017,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2065,7 +2065,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2113,7 +2113,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2161,7 +2161,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2213,7 +2213,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2261,7 +2261,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2309,7 +2309,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2357,7 +2357,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2405,7 +2405,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2453,7 +2453,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2501,7 +2501,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2549,7 +2549,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2601,7 +2601,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2653,7 +2653,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2707,7 +2707,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2758,7 +2758,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2804,7 +2804,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2851,7 +2851,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2902,7 +2902,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -2954,7 +2954,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3002,7 +3002,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3050,7 +3050,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3098,7 +3098,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3150,7 +3150,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3205,7 +3205,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3256,7 +3256,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3308,7 +3308,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3360,7 +3360,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3408,7 +3408,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3462,7 +3462,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3510,7 +3510,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3558,7 +3558,7 @@
                       }
                   }),
                   new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                      return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                   }),
               ]);
           },
@@ -3687,7 +3687,7 @@
                   }
                   delete _this.cIds[message.cid];
                   if (message.error) {
-                      executor.reject(message.error);
+                      executor.reject(new Error(message.error));
                   }
                   else {
                       executor.resolve(message);
@@ -3704,11 +3704,11 @@
                   }
                   resolve(session);
               };
-              socket.onerror = function (evt) {
+              socket.onerror = function () {
                   if (_this.socket !== socket) {
                       return;
                   }
-                  reject(evt);
+                  reject(new Error("connect onerror"));
                   socket.close();
               };
           });
@@ -3782,10 +3782,10 @@
           var m = message;
           return new Promise(function (resolve, reject) {
               if (_this.socket === undefined) {
-                  reject("Socket connection has not been established yet.");
+                  reject(new Error("Socket connection has not been established yet."));
               }
               else if (_this.socket.readyState !== 1) {
-                  reject("Socket connection has not been open yet.");
+                  reject(new Error("Socket connection has not been open yet."));
               }
               else {
                   if (m.match_data_send) {
@@ -3884,7 +3884,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -3934,7 +3934,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -3983,7 +3983,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4032,7 +4032,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4082,7 +4082,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4131,7 +4131,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4180,7 +4180,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4234,7 +4234,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4283,7 +4283,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
@@ -4333,7 +4333,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -4407,7 +4407,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -4462,7 +4462,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -4571,7 +4571,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);
@@ -5095,7 +5095,7 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
               }),
           ]).then(function (response) {
               return Promise.resolve(response != undefined);

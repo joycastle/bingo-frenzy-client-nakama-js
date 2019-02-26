@@ -578,7 +578,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -625,7 +625,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -676,7 +676,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -729,7 +729,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -782,7 +782,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -835,7 +835,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -889,7 +889,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -942,7 +942,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -995,7 +995,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1048,7 +1048,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1099,7 +1099,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1150,7 +1150,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1201,7 +1201,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1253,7 +1253,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1304,7 +1304,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1355,7 +1355,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1406,7 +1406,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1457,7 +1457,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1508,7 +1508,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1559,7 +1559,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1610,7 +1610,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1661,7 +1661,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1712,7 +1712,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1763,7 +1763,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1817,7 +1817,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1866,7 +1866,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1913,7 +1913,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1960,7 +1960,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2007,7 +2007,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2059,7 +2059,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2109,7 +2109,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2160,7 +2160,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2211,7 +2211,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2266,7 +2266,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2317,7 +2317,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2368,7 +2368,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2419,7 +2419,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2470,7 +2470,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2521,7 +2521,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2572,7 +2572,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2623,7 +2623,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2677,7 +2677,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2732,7 +2732,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2788,7 +2788,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2841,7 +2841,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2889,7 +2889,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2938,7 +2938,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -2991,7 +2991,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3046,7 +3046,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3097,7 +3097,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3148,7 +3148,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3199,7 +3199,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3253,7 +3253,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3310,7 +3310,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3363,7 +3363,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3417,7 +3417,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3472,7 +3472,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3523,7 +3523,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3579,7 +3579,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3629,7 +3629,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -3680,7 +3680,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },

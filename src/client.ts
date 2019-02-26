@@ -567,7 +567,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -621,7 +621,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -674,7 +674,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -727,7 +727,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -781,7 +781,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -834,7 +834,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -887,7 +887,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -945,7 +945,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -998,7 +998,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
@@ -1052,7 +1052,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -1132,7 +1132,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -1193,7 +1193,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -1319,7 +1319,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
@@ -1916,7 +1916,7 @@ export class Client {
         }
       }),
       new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);

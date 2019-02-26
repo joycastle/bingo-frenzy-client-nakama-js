@@ -389,7 +389,7 @@ export class DefaultSocket implements Socket {
         delete this.cIds[message.cid];
 
         if (message.error) {
-          executor.reject(<SocketError>message.error);
+          executor.reject(new Error(message.error));
         } else {
           executor.resolve(message);
         }
@@ -406,11 +406,11 @@ export class DefaultSocket implements Socket {
         }
         resolve(session);
       }
-      socket.onerror = (evt: Event) => {
+      socket.onerror = () => {
         if (this.socket !== socket) {
           return;
         }
-        reject(evt);
+        reject(new Error("connect onerror"));
         socket.close();
       }
     });
@@ -498,9 +498,9 @@ export class DefaultSocket implements Socket {
     const m = message as any;
     return new Promise((resolve, reject) => {
       if (this.socket === undefined) {
-        reject("Socket connection has not been established yet.");
+        reject(new Error("Socket connection has not been established yet."));
       } else if (this.socket.readyState !== 1) {
-        reject("Socket connection has not been open yet.");
+        reject(new Error("Socket connection has not been open yet."));
       } else {
         if (m.match_data_send) {
           m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
