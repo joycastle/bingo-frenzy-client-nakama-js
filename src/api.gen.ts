@@ -574,7 +574,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -621,7 +621,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -672,7 +672,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -725,7 +725,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -778,7 +778,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -831,7 +831,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -885,7 +885,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -938,7 +938,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -991,7 +991,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1044,7 +1044,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1095,7 +1095,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1146,7 +1146,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1197,7 +1197,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1249,7 +1249,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1300,7 +1300,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1351,7 +1351,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1402,7 +1402,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1453,7 +1453,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1504,7 +1504,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1555,7 +1555,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1606,7 +1606,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1657,7 +1657,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1708,7 +1708,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1759,7 +1759,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1813,7 +1813,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1862,7 +1862,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1909,7 +1909,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -1956,7 +1956,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2003,7 +2003,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2055,7 +2055,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2105,7 +2105,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2156,7 +2156,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2207,7 +2207,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2262,7 +2262,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2313,7 +2313,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2364,7 +2364,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2415,7 +2415,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2466,7 +2466,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2517,7 +2517,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2568,7 +2568,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2619,7 +2619,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2673,7 +2673,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2728,7 +2728,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2784,7 +2784,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2837,7 +2837,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2885,7 +2885,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2934,7 +2934,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -2987,7 +2987,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3042,7 +3042,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3093,7 +3093,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3144,7 +3144,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3195,7 +3195,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3249,7 +3249,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3306,7 +3306,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3359,7 +3359,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3413,7 +3413,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3468,7 +3468,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3519,7 +3519,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3575,7 +3575,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3625,7 +3625,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>
@@ -3676,7 +3676,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error(String(response.status));
           }
         }),
         new Promise((_, reject) =>

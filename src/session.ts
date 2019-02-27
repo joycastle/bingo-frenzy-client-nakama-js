@@ -31,7 +31,7 @@ export class Session {
     const createdAt = Math.floor(new Date().getTime() / 1000);
     const parts = jwt.split('.');
     if (parts.length != 3) {
-      throw 'jwt is not valid.';
+      throw new Error('jwt is not valid.');
     }
     const decoded = JSON.parse(atob(parts[1])); // FIXME: use base64 polyfill for React Native.
     const expiresAt = Math.floor(parseInt(decoded['exp']));
