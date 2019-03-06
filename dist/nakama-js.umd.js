@@ -608,7 +608,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -652,7 +652,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -700,7 +700,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -751,7 +751,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -802,7 +802,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -853,7 +853,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -905,7 +905,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -956,7 +956,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1007,7 +1007,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1058,7 +1058,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1106,7 +1106,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1154,7 +1154,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1202,7 +1202,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1252,7 +1252,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1300,7 +1300,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1348,7 +1348,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1396,7 +1396,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1444,7 +1444,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1492,7 +1492,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1540,7 +1540,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1588,7 +1588,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1636,7 +1636,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1684,7 +1684,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1732,7 +1732,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1784,7 +1784,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1831,7 +1831,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1875,7 +1875,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1919,7 +1919,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -1963,7 +1963,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2013,7 +2013,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2061,7 +2061,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2109,7 +2109,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2157,7 +2157,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2209,7 +2209,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2257,7 +2257,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2305,7 +2305,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2353,7 +2353,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2401,7 +2401,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2449,7 +2449,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2497,7 +2497,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2545,7 +2545,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2597,7 +2597,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2649,7 +2649,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2703,7 +2703,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2754,7 +2754,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2800,7 +2800,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2847,7 +2847,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2898,7 +2898,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2950,7 +2950,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -2998,7 +2998,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3046,7 +3046,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3094,7 +3094,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3146,7 +3146,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3201,7 +3201,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3252,7 +3252,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3304,7 +3304,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3356,7 +3356,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3404,7 +3404,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3458,7 +3458,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3506,7 +3506,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3554,7 +3554,7 @@
                           return response.json();
                       }
                       else {
-                          throw response;
+                          throw new Error(String(response.status));
                       }
                   }),
                   new Promise(function (_, reject) {
@@ -3580,7 +3580,7 @@
           var createdAt = Math.floor(new Date().getTime() / 1000);
           var parts = jwt.split('.');
           if (parts.length != 3) {
-              throw 'jwt is not valid.';
+              throw new Error('jwt is not valid.');
           }
           var decoded = JSON.parse(atob(parts[1]));
           var expiresAt = Math.floor(parseInt(decoded['exp']));
@@ -3687,7 +3687,7 @@
                   }
                   delete _this.cIds[message.cid];
                   if (message.error) {
-                      executor.reject(new Error(message.error));
+                      executor.reject(new Error(JSON.stringify(message.error)));
                   }
                   else {
                       executor.resolve(message);
@@ -3880,7 +3880,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -3930,7 +3930,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -3979,7 +3979,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4028,7 +4028,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4078,7 +4078,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4127,7 +4127,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4176,7 +4176,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4230,7 +4230,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4279,7 +4279,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4329,7 +4329,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4403,7 +4403,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4458,7 +4458,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -4567,7 +4567,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {
@@ -5091,7 +5091,7 @@
                       return response.json();
                   }
                   else {
-                      throw response;
+                      throw new Error(String(response.status));
                   }
               }),
               new Promise(function (_, reject) {

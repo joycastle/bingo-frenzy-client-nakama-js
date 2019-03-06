@@ -389,7 +389,7 @@ export class DefaultSocket implements Socket {
         delete this.cIds[message.cid];
 
         if (message.error) {
-          executor.reject(new Error(message.error));
+          executor.reject(new Error(JSON.stringify(message.error)));
         } else {
           executor.resolve(message);
         }
