@@ -571,11 +571,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           } else if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error("Request status error, response: " + response);
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
@@ -1100,6 +1100,22 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/add"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+        user_ids: userIds,
+      } as any;
+
+      let _body = null;
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Ban a set of users from a group. */
+    banGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/ban"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {

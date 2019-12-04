@@ -129,11 +129,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           } else if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw response;
+            throw new Error("Request status error, response: " + response);
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
         ),
       ]);
     },
