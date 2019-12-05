@@ -297,7 +297,7 @@ export interface SocketError {
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
   private socket?: WebSocket;
-  private readonly cIds: { [key: string]: PromiseExecutor };
+  private cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
 
   constructor(
@@ -329,6 +329,13 @@ export class DefaultSocket implements Socket {
       if (this.socket !== socket) {
         return;
       }
+
+      Object.keys(this.cIds).forEach((key) => {
+        const executor = this.cIds[key];
+        executor.reject(new Error("socket closed"));
+      });
+      this.cIds = {};
+      
       this.ondisconnect(evt);
     }
 

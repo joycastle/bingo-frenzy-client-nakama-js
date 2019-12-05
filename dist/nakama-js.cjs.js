@@ -4,17 +4,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 (function () {
 
-  var object = (
-    // #34: CommonJS
-    typeof exports === 'object' && exports !== null &&
-    typeof exports.nodeType !== 'number' ?
-      exports :
-    // #8: web workers
-    typeof self != 'undefined' ?
-      self :
-    // #31: ExtendScript
-      $.global
-  );
+  var object =
+    typeof exports != 'undefined' ? exports :
+    typeof self != 'undefined' ? self : // #8: web workers
+    $.global; // #31: ExtendScript
 
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -621,11 +614,13 @@ var NakamaApi = function (configuration) {
                         return response.json();
                     }
                     else {
-                        throw response;
+                        return response.text().then(function (text) {
+                            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                        });
                     }
                 }),
                 new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
                 }),
             ]);
         },
@@ -941,10 +936,13 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
-        addFriends: function (options) {
+        addFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
-            var queryParams = {};
+            var queryParams = {
+                ids: ids,
+                usernames: usernames,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1025,6 +1023,19 @@ var NakamaApi = function (configuration) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
+                .replace("{group_id}", encodeURIComponent(String(groupId)));
+            var queryParams = {
+                user_ids: userIds,
+            };
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
+        banGroupUsers: function (groupId, userIds, options) {
+            if (options === void 0) { options = {}; }
+            if (groupId === null || groupId === undefined) {
+                throw new Error("'groupId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/group/{group_id}/ban"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {
                 user_ids: userIds,
@@ -1390,7 +1401,7 @@ var Session = (function () {
         var createdAt = Math.floor(new Date().getTime() / 1000);
         var parts = jwt.split('.');
         if (parts.length != 3) {
-            throw 'jwt is not valid.';
+            throw new Error('jwt is not valid.');
         }
         var decoded = JSON.parse(atob(parts[1]));
         var expiresAt = Math.floor(parseInt(decoded['exp']));
@@ -1418,7 +1429,7 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
         if (createStatus === void 0) { createStatus = false; }
-        if (this.socket != undefined) {
+        if (this.socket !== undefined && this.socket.readyState === 1) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
@@ -1426,13 +1437,20 @@ var DefaultSocket = (function () {
         var socket = new WebSocket(url);
         this.socket = socket;
         socket.onclose = function (evt) {
+            if (_this.socket !== socket) {
+                return;
+            }
+            Object.keys(_this.cIds).forEach(function (key) {
+                var executor = _this.cIds[key];
+                executor.reject(new Error("socket closed"));
+            });
+            _this.cIds = {};
             _this.ondisconnect(evt);
-            _this.socket = undefined;
-        };
-        socket.onerror = function (evt) {
-            _this.onerror(evt);
         };
         socket.onmessage = function (evt) {
+            if (_this.socket !== socket) {
+                return;
+            }
             var message = JSON.parse(evt.data);
             if (_this.verbose && window && window.console) {
                 console.log("Response: %o", message);
@@ -1495,7 +1513,7 @@ var DefaultSocket = (function () {
                 }
                 delete _this.cIds[message.cid];
                 if (message.error) {
-                    executor.reject(message.error);
+                    executor.reject(new Error(JSON.stringify(message.error)));
                 }
                 else {
                     executor.resolve(message);
@@ -1504,15 +1522,20 @@ var DefaultSocket = (function () {
         };
         return new Promise(function (resolve, reject) {
             socket.onopen = function (evt) {
+                if (_this.socket !== socket) {
+                    return;
+                }
                 if (_this.verbose && window && window.console) {
                     console.log(evt);
                 }
                 resolve(session);
             };
-            socket.onerror = function (evt) {
-                reject(evt);
+            socket.onerror = function () {
+                if (_this.socket !== socket) {
+                    return;
+                }
+                reject(new Error("connect onerror"));
                 socket.close();
-                _this.socket = undefined;
             };
         });
     };
@@ -1585,7 +1608,10 @@ var DefaultSocket = (function () {
         var m = message;
         return new Promise(function (resolve, reject) {
             if (_this.socket === undefined) {
-                reject("Socket connection has not been established yet.");
+                reject(new Error("Socket connection has not been established yet."));
+            }
+            else if (_this.socket.readyState !== 1) {
+                reject(new Error("Socket connection has not been open yet."));
             }
             else {
                 if (m.match_data_send) {
@@ -1680,11 +1706,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.json().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -1730,11 +1758,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -1779,11 +1809,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -1828,11 +1860,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -1878,11 +1912,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -1927,11 +1963,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -1976,11 +2014,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -2030,11 +2070,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -2079,11 +2121,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -2129,11 +2173,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -2203,11 +2249,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -2258,11 +2306,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -2367,11 +2417,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -2891,11 +2943,13 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw response;
+                    return response.text().then(function (text) {
+                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    });
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);

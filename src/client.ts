@@ -562,7 +562,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.json().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -616,7 +618,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -669,7 +673,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -722,7 +728,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -776,7 +784,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -829,7 +839,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -882,7 +894,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -940,7 +954,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -993,7 +1009,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -1047,7 +1065,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -1127,7 +1147,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -1188,7 +1210,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -1314,7 +1338,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>
@@ -1911,7 +1937,9 @@ export class Client {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          throw new Error(String(response.status));
+          return response.text().then((text) => {
+            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+          });
         }
       }),
       new Promise((_, reject) =>

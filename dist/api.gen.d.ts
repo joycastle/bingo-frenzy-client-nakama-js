@@ -320,6 +320,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     deleteGroup(groupId: string, options?: any): Promise<any>;
     updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<any>;
     addGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
+    banGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
     joinGroup(groupId: string, options?: any): Promise<any>;
     kickGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
     leaveGroup(groupId: string, options?: any): Promise<any>;

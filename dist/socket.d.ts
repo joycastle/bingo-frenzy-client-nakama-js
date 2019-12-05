@@ -200,7 +200,7 @@ export declare class DefaultSocket implements Socket {
     readonly useSSL: boolean;
     verbose: boolean;
     private socket?;
-    private readonly cIds;
+    private cIds;
     private nextCid;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
