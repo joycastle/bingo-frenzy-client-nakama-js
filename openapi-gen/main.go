@@ -129,8 +129,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
           } else if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            return response.text().then((text) => {
-              throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+            return response.json().then((json) => {
+              throw new Error(JSON.stringify({
+                status: response.status,
+                statusText: response.statusText,
+                data: json,
+              }));
             });
           }
         }),

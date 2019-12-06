@@ -614,8 +614,12 @@ var NakamaApi = function (configuration) {
                         return response.json();
                     }
                     else {
-                        return response.text().then(function (text) {
-                            throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                        return response.json().then(function (json) {
+                            throw new Error(JSON.stringify({
+                                status: response.status,
+                                statusText: response.statusText,
+                                data: json,
+                            }));
                         });
                     }
                 }),
@@ -1706,8 +1710,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.json().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -1758,8 +1766,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -1809,8 +1821,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -1860,8 +1876,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -1912,8 +1932,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -1963,8 +1987,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2014,8 +2042,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2070,8 +2102,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2121,8 +2157,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2173,8 +2213,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2249,8 +2293,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2306,8 +2354,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2417,8 +2469,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
@@ -2943,8 +2999,12 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    return response.text().then(function (text) {
-                        throw new Error("status=" + response.status + ", statusText=" + response.statusText + ", text=" + text);
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
                     });
                 }
             }),
