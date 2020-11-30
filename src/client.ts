@@ -20,18 +20,15 @@ import {
   ApiAccountDevice,
   ApiAccountEmail,
   ApiAccountFacebook,
+  ApiAccountApple,
   ApiAccountGoogle,
   ApiAccountGameCenter,
   ApiAccountSteam,
-  ApiChannelMessageList,
   ApiCreateGroupRequest,
   ApiDeleteStorageObjectsRequest,
   ApiFriends,
   ApiGroup,
-  ApiGroupList,
-  ApiGroupUserList,
   ApiLeaderboardRecord,
-  ApiLeaderboardRecordList,
   ApiMatchList,
   ApiNotificationList,
   ApiReadStorageObjectsRequest,
@@ -39,15 +36,19 @@ import {
   ApiStorageObjectAcks,
   ApiStorageObjectList,
   ApiStorageObjects,
-  ApiTournamentList,
   ApiTournamentRecordList,
   ApiUpdateAccountRequest,
   ApiUpdateGroupRequest,
   ApiUsers,
-  ApiUserGroupList,
   ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
+  ApiUserGroupList,
+  ApiChannelMessageList,
+  ApiGroupUserList,
+  ApiGroupList,
+  ApiLeaderboardRecordList,
+  ApiTournamentList,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -98,6 +99,12 @@ export interface AccountFacebook {
   create?: boolean;
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+}
+
+/** Send a Apple token to the server. Used with authenticate. */
+export interface AccountApple {
+  // The token received from Apple to access their API.
+  token: string;
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate. */
@@ -362,6 +369,8 @@ export interface User {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
+  // The Apple id in the user's account.
+  apple_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
@@ -876,6 +885,64 @@ export class Client {
     });
   }
 
+  /** Authenticate a user with a Apple OAuth token against the server. */
+  authenticateApple(request: AccountApple): Promise<Session> {
+    const urlPath = "/v2/account/authenticate/apple";
+
+    const queryParams = {
+      token: request.token,
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+    fetchOptions.body = JSON.stringify({
+      token: request.token,
+    });
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          return response.json().then((json) => {
+            throw new Error(JSON.stringify({
+              status: response.status,
+              statusText: response.statusText,
+              data: json,
+            }));
+          });
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
+      ),
+    ]).then((apiSession) => {
+      return Session.restore(apiSession.token || "");
+    });
+  }
+
   /** Authenticate a user with Google against the server. */
   authenticateGoogle(request: AccountGoogle): Promise<Session> {
     const urlPath = "/v2/account/authenticate/google";
@@ -1312,6 +1379,7 @@ export class Client {
           display_name: u.display_name,
           edge_count: u.edge_count ? Number(u.edge_count) : 0,
           facebook_id: u.facebook_id,
+          apple_id: u.apple_id,
           gamecenter_id: u.gamecenter_id,
           google_id: u.google_id,
           id: u.id,
@@ -1577,6 +1645,14 @@ export class Client {
   linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkFacebook(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Add Apple to the social profiles on the current user's account. */
+  linkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.linkApple(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2094,6 +2170,14 @@ export class Client {
   unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkFacebook(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Remove Apple from the social profiles on the current user's account. */
+  unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.unlinkApple(request).then((response: any) => {
       return response !== undefined;
     });
   }

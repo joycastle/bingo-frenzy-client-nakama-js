@@ -57,6 +57,11 @@ export interface ApiAccount {
   // The user's wallet data.
   wallet?: string;
 }
+/** Send a Apple Sign In token to the server. Used with authenticate/link/unlink. */
+export interface ApiAccountApple {
+  // The ID token received from Apple to validate.
+  token?: string;
+}
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountCustom {
   // A custom identifier.
@@ -120,6 +125,10 @@ export interface ApiChannelMessage {
   persistent?: boolean;
   // Message sender, usually a user ID.
   sender_id?: string;
+  // 
+  seq_id?: number;
+  // 
+  ts?: number;
   // The UNIX time when the message was last updated.
   update_time?: string;
   // The username of the message sender, if any.
@@ -456,6 +465,8 @@ export interface ApiUpdateGroupRequest {
 }
 /** A user in the server. */
 export interface ApiUser {
+  // The Apple Sign In ID in the user's account.
+  apple_id?: string;
   // A URL for an avatar image.
   avatar_url?: string;
   // The UNIX time when the user was created.
@@ -466,6 +477,8 @@ export interface ApiUser {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
+  // The Facebook Instant Game ID in the user's account.
+  facebook_instant_game_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
@@ -518,6 +531,22 @@ export interface ApiWriteStorageObject {
 export interface ApiWriteStorageObjectsRequest {
   // The objects to store on the server.
   objects?: Array<ApiWriteStorageObject>;
+}
+/**  */
+export interface ProtobufAny {
+  // 
+  type_url?: string;
+  // 
+  value?: string;
+}
+/**  */
+export interface RpcStatus {
+  // 
+  code?: number;
+  // 
+  details?: Array<ProtobufAny>;
+  // 
+  message?: string;
 }
 
 export const NakamaApi = (configuration: ConfigurationParameters = {
@@ -621,6 +650,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       _body = JSON.stringify(body || {});
 
       return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
+    },
+    /** Authenticate a user with an Apple ID against the server. */
+    authenticateApple(body: ApiAccountApple, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/apple";
+
+      const queryParams = {
+        create: create,
+        username: username,
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -742,6 +788,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Add an Apple ID to the social profiles on the current user's account. */
+    linkApple(body: ApiAccountApple, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/apple";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Add a custom ID to the social profiles on the current user's account. */
     linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
@@ -839,6 +900,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/steam";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Remove the Apple ID from the social profiles on the current user's account. */
+    unlinkApple(body: ApiAccountApple, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/apple";
 
       const queryParams = {
       } as any;
@@ -996,12 +1072,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Add friends by ID or username to a user's account. */
-    addFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
+    addFriends(options: any = {}): Promise<any> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
-        ids: ids,
-        usernames: usernames,
       } as any;
 
       let _body = null;
@@ -1009,12 +1083,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Block one or more users by ID or username. */
-    blockFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
+    blockFriends(options: any = {}): Promise<any> {
       const urlPath = "/v2/friend/block";
 
       const queryParams = {
-        ids: ids,
-        usernames: usernames,
       } as any;
 
       let _body = null;
@@ -1101,7 +1173,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Add users to a group. */
-    addGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
+    addGroupUsers(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1109,23 +1181,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-        user_ids: userIds,
-      } as any;
-
-      let _body = null;
-
-      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Ban a set of users from a group. */
-    banGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/ban"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-        user_ids: userIds,
       } as any;
 
       let _body = null;
@@ -1148,7 +1203,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
+    kickGroupUsers(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1156,7 +1211,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-        user_ids: userIds,
       } as any;
 
       let _body = null;
@@ -1179,7 +1233,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
+    promoteGroupUsers(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1187,7 +1241,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-        user_ids: userIds,
       } as any;
 
       let _body = null;
@@ -1341,7 +1394,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Execute a Lua function on the server. */
-    rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
+    rpcFunc(id: string, body: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
       if (id === null || id === undefined) {
         throw new Error("'id' is a required parameter but is null or undefined.");
       }
@@ -1352,6 +1405,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{id}", encodeURIComponent(String(id)));
 
       const queryParams = {
+        http_key: httpKey,
       } as any;
 
       let _body = null;
