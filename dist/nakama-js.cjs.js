@@ -4,10 +4,17 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 (function () {
 
-  var object =
-    typeof exports != 'undefined' ? exports :
-    typeof self != 'undefined' ? self : // #8: web workers
-    $.global; // #31: ExtendScript
+  var object = (
+    // #34: CommonJS
+    typeof exports === 'object' && exports !== null &&
+    typeof exports.nodeType !== 'number' ?
+      exports :
+    // #8: web workers
+    typeof self != 'undefined' ?
+      self :
+    // #31: ExtendScript
+      $.global
+  );
 
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -569,11 +576,8 @@ var NakamaApi = function (configuration) {
         username: "",
         timeoutMs: 5000,
     }; }
-    return {
-        healthcheck: function (options) {
-            if (options === void 0) { options = {}; }
-            var urlPath = "/healthcheck";
-            var queryParams = {};
+    var napi = {
+        doFetch: function (urlPath, method, queryParams, body, options) {
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -588,75 +592,56 @@ var NakamaApi = function (configuration) {
                 }
             })
                 .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
+            var fetchOptions = __assign({ method: method }, options);
+            fetchOptions.headers = __assign({}, options.headers);
             if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+                fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
             }
             else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+                fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
-            fetchOptions.headers = __assign({}, headers, options.headers);
+            if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+                fetchOptions.headers["Accept"] = "application/json";
+            }
+            if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+                fetchOptions.headers["Content-Type"] = "application/json";
+            }
+            Object.keys(fetchOptions.headers).forEach(function (key) {
+                if (!fetchOptions.headers[key]) {
+                    delete fetchOptions.headers[key];
+                }
+            });
+            fetchOptions.body = body;
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
+                    if (response.status == 204) {
+                        return response;
+                    }
+                    else if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     }
                     else {
-                        throw new Error(String(response.status));
+                        throw response;
                     }
                 }),
                 new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
                 }),
             ]);
+        },
+        healthcheck: function (options) {
+            if (options === void 0) { options = {}; }
+            var urlPath = "/healthcheck";
+            var queryParams = {};
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         getAccount: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/account";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         updateAccount: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -665,46 +650,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "PUT" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
         authenticateCustom: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -716,46 +664,9 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         authenticateDevice: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -767,46 +678,9 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         authenticateEmail: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -818,48 +692,11 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        authenticateFacebook: function (body, create, username, import_, options) {
+        authenticateFacebook: function (body, create, username, sync, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
@@ -868,48 +705,11 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 create: create,
                 username: username,
-                import: import_,
+                sync: sync,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         authenticateGameCenter: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -921,46 +721,9 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         authenticateGoogle: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -972,46 +735,9 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         authenticateSteam: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
@@ -1023,46 +749,9 @@ var NakamaApi = function (configuration) {
                 create: create,
                 username: username,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkCustom: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1071,46 +760,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/custom";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkDevice: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1119,46 +771,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/device";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkEmail: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1167,96 +782,22 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/email";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        linkFacebook: function (body, import_, options) {
+        linkFacebook: function (body, sync, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/link/facebook";
             var queryParams = {
-                import: import_,
+                sync: sync,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkGameCenter: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1265,46 +806,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/gamecenter";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkGoogle: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1313,46 +817,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/google";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         linkSteam: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1361,46 +828,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/steam";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkCustom: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1409,46 +839,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/custom";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkDevice: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1457,46 +850,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/device";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkEmail: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1505,46 +861,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/email";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkFacebook: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1553,46 +872,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/facebook";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkGameCenter: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1601,46 +883,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/gamecenter";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkGoogle: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1649,46 +894,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/google";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         unlinkSteam: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -1697,46 +905,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/unlink/steam";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         listChannelMessages: function (channelId, limit, forward, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -1750,45 +921,8 @@ var NakamaApi = function (configuration) {
                 forward: forward,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         deleteFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
@@ -1797,177 +931,32 @@ var NakamaApi = function (configuration) {
                 ids: ids,
                 usernames: usernames,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "DELETE" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
         },
         listFriends: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         addFriends: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        blockFriends: function (options) {
+        blockFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend/block";
-            var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
+            var queryParams = {
+                ids: ids,
+                usernames: usernames,
             };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         importFacebookFriends: function (body, reset, options) {
             if (options === void 0) { options = {}; }
@@ -1978,46 +967,9 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 reset: reset,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         listGroups: function (name, cursor, limit, options) {
             if (options === void 0) { options = {}; }
@@ -2027,45 +979,8 @@ var NakamaApi = function (configuration) {
                 cursor: cursor,
                 limit: limit,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         createGroup: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -2074,46 +989,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/group";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         deleteGroup: function (groupId, options) {
             if (options === void 0) { options = {}; }
@@ -2123,45 +1001,8 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/group/{group_id}"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "DELETE" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
         },
         updateGroup: function (groupId, body, options) {
             if (options === void 0) { options = {}; }
@@ -2174,94 +1015,22 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/group/{group_id}"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "PUT" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
-        addGroupUsers: function (groupId, options) {
+        addGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
+            var queryParams = {
+                user_ids: userIds,
             };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         joinGroup: function (groupId, options) {
             if (options === void 0) { options = {}; }
@@ -2271,93 +1040,21 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/group/{group_id}/join"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        kickGroupUsers: function (groupId, options) {
+        kickGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/kick"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
+            var queryParams = {
+                user_ids: userIds,
             };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         leaveGroup: function (groupId, options) {
             if (options === void 0) { options = {}; }
@@ -2367,93 +1064,21 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/group/{group_id}/leave"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        promoteGroupUsers: function (groupId, options) {
+        promoteGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/promote"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
+            var queryParams = {
+                user_ids: userIds,
             };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         listGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
@@ -2463,45 +1088,8 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/group/{group_id}/user"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         deleteLeaderboardRecord: function (leaderboardId, options) {
             if (options === void 0) { options = {}; }
@@ -2511,45 +1099,8 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/leaderboard/{leaderboard_id}"
                 .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "DELETE" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
         },
         listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -2563,45 +1114,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         writeLeaderboardRecord: function (leaderboardId, body, options) {
             if (options === void 0) { options = {}; }
@@ -2614,46 +1128,9 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/leaderboard/{leaderboard_id}"
                 .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, options) {
             if (options === void 0) { options = {}; }
@@ -2669,45 +1146,8 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 limit: limit,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         listMatches: function (limit, authoritative, label, minSize, maxSize, query, options) {
             if (options === void 0) { options = {}; }
@@ -2720,45 +1160,8 @@ var NakamaApi = function (configuration) {
                 max_size: maxSize,
                 query: query,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         deleteNotifications: function (ids, options) {
             if (options === void 0) { options = {}; }
@@ -2766,45 +1169,8 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 ids: ids,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "DELETE" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
         },
         listNotifications: function (limit, cacheableCursor, options) {
             if (options === void 0) { options = {}; }
@@ -2813,45 +1179,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cacheable_cursor: cacheableCursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         rpcFunc2: function (id, payload, httpKey, options) {
             if (options === void 0) { options = {}; }
@@ -2864,45 +1193,8 @@ var NakamaApi = function (configuration) {
                 payload: payload,
                 http_key: httpKey,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         rpcFunc: function (id, body, options) {
             if (options === void 0) { options = {}; }
@@ -2915,46 +1207,9 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/rpc/{id}"
                 .replace("{id}", encodeURIComponent(String(id)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         readStorageObjects: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -2963,46 +1218,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/storage";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         writeStorageObjects: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -3011,46 +1229,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/storage";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "PUT" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
         deleteStorageObjects: function (body, options) {
             if (options === void 0) { options = {}; }
@@ -3059,46 +1240,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/storage/delete";
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "PUT" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
         listStorageObjects: function (collection, userId, limit, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -3112,45 +1256,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         listStorageObjects2: function (collection, userId, limit, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -3167,45 +1274,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         listTournaments: function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -3218,45 +1288,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, options) {
             if (options === void 0) { options = {}; }
@@ -3270,45 +1303,8 @@ var NakamaApi = function (configuration) {
                 limit: limit,
                 cursor: cursor,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         writeTournamentRecord: function (tournamentId, body, options) {
             if (options === void 0) { options = {}; }
@@ -3321,46 +1317,9 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/tournament/{tournament_id}"
                 .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "PUT" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
         joinTournament: function (tournamentId, options) {
             if (options === void 0) { options = {}; }
@@ -3370,45 +1329,8 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/tournament/{tournament_id}/join"
                 .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "POST" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
         listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, options) {
             if (options === void 0) { options = {}; }
@@ -3424,45 +1346,8 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 limit: limit,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         getUsers: function (ids, usernames, facebookIds, options) {
             if (options === void 0) { options = {}; }
@@ -3472,45 +1357,8 @@ var NakamaApi = function (configuration) {
                 usernames: usernames,
                 facebook_ids: facebookIds,
             };
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
         listUserGroups: function (userId, options) {
             if (options === void 0) { options = {}; }
@@ -3520,47 +1368,11 @@ var NakamaApi = function (configuration) {
             var urlPath = "/v2/user/{user_id}/group"
                 .replace("{user_id}", encodeURIComponent(String(userId)));
             var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "GET" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw new Error(String(response.status));
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."));
-                }),
-            ]);
+            var _body = null;
+            return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
     };
+    return napi;
 };
 
 var Session = (function () {
@@ -3578,7 +1390,7 @@ var Session = (function () {
         var createdAt = Math.floor(new Date().getTime() / 1000);
         var parts = jwt.split('.');
         if (parts.length != 3) {
-            throw new Error('jwt is not valid.');
+            throw 'jwt is not valid.';
         }
         var decoded = JSON.parse(atob(parts[1]));
         var expiresAt = Math.floor(parseInt(decoded['exp']));
@@ -3606,7 +1418,7 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
         if (createStatus === void 0) { createStatus = false; }
-        if (this.socket !== undefined && this.socket.readyState === 1) {
+        if (this.socket != undefined) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
@@ -3614,15 +1426,13 @@ var DefaultSocket = (function () {
         var socket = new WebSocket(url);
         this.socket = socket;
         socket.onclose = function (evt) {
-            if (_this.socket !== socket) {
-                return;
-            }
             _this.ondisconnect(evt);
+            _this.socket = undefined;
+        };
+        socket.onerror = function (evt) {
+            _this.onerror(evt);
         };
         socket.onmessage = function (evt) {
-            if (_this.socket !== socket) {
-                return;
-            }
             var message = JSON.parse(evt.data);
             if (_this.verbose && window && window.console) {
                 console.log("Response: %o", message);
@@ -3685,7 +1495,7 @@ var DefaultSocket = (function () {
                 }
                 delete _this.cIds[message.cid];
                 if (message.error) {
-                    executor.reject(new Error(JSON.stringify(message.error)));
+                    executor.reject(message.error);
                 }
                 else {
                     executor.resolve(message);
@@ -3694,20 +1504,15 @@ var DefaultSocket = (function () {
         };
         return new Promise(function (resolve, reject) {
             socket.onopen = function (evt) {
-                if (_this.socket !== socket) {
-                    return;
-                }
                 if (_this.verbose && window && window.console) {
                     console.log(evt);
                 }
                 resolve(session);
             };
-            socket.onerror = function () {
-                if (_this.socket !== socket) {
-                    return;
-                }
-                reject(new Error("connect onerror"));
+            socket.onerror = function (evt) {
+                reject(evt);
                 socket.close();
+                _this.socket = undefined;
             };
         });
     };
@@ -3780,10 +1585,7 @@ var DefaultSocket = (function () {
         var m = message;
         return new Promise(function (resolve, reject) {
             if (_this.socket === undefined) {
-                reject(new Error("Socket connection has not been established yet."));
-            }
-            else if (_this.socket.readyState !== 1) {
-                reject(new Error("Socket connection has not been open yet."));
+                reject("Socket connection has not been established yet.");
             }
             else {
                 if (m.match_data_send) {
@@ -3878,11 +1680,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -3928,11 +1730,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -3977,11 +1779,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4026,11 +1828,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4076,11 +1878,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4125,11 +1927,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4174,11 +1976,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4228,11 +2030,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4277,11 +2079,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
@@ -4327,11 +2129,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -4401,11 +2203,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -4456,11 +2258,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -4565,11 +2367,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);
@@ -5089,11 +2891,11 @@ var Client = (function () {
                     return response.json();
                 }
                 else {
-                    throw new Error(String(response.status));
+                    throw response;
                 }
             }),
             new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
             }),
         ]).then(function (response) {
             return Promise.resolve(response != undefined);

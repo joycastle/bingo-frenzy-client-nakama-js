@@ -27,8 +27,8 @@ You'll need to setup the server and database before you can connect with the cli
 
     ```js
     // <script src="path/to/nakama-js.umd.js"></script>
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350);
-    client.ssl = false; // enable if server is run with an SSL certificate
+    var useSSL = false; // Enable if server is run with an SSL certificate.
+    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL);
     ```
 
 ## Usage
@@ -124,7 +124,7 @@ socket.send({ channel_message_send: {
 
 ## Contribute
 
-The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community chat](https://gitter.im/heroiclabs/nakama).
+The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
 
 ### Source Builds
 

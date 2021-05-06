@@ -45,6 +45,8 @@ export interface {{$classname | title}} {
   // {{$property.Description}}
   {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
+  {{- else if eq $property.Type "number" }}
+  {{$fieldname}}?: number;
   {{- else if eq $property.Type "boolean"}}
   {{$fieldname}}?: boolean;
   {{- else if eq $property.Type "array"}}
@@ -56,6 +58,16 @@ export interface {{$classname | title}} {
   {{$fieldname}}?: Array<boolean>;
     {{- else}}
   {{$fieldname}}?: Array<{{$property.Items.Ref | cleanRef}}>;
+    {{- end}}
+  {{- else if eq $property.Type "object"}}
+    {{- if eq $property.AdditionalProperties.Type "string"}}
+  {{$fieldname}}?: Map<string, string>;
+    {{- else if eq $property.AdditionalProperties.Type "integer"}}
+  {{$fieldname}}?: Map<string, integer>;
+    {{- else if eq $property.AdditionalProperties.Type "boolean"}}
+  {{$fieldname}}?: Map<string, boolean>;
+    {{- else}}
+  {{$fieldname}}?: Map<{{$property.AdditionalProperties | cleanRef}}>;
     {{- end}}
   {{- else if eq $property.Type "string"}}
   {{$fieldname}}?: string;
@@ -73,7 +85,58 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   username: "",
   timeoutMs: 5000,
 }) => {
-  return {
+  const napi = {
+    /** Perform the underlying Fetch operation and return Promise object **/
+    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
+      fetchOptions.headers = {...options.headers};
+      if (configuration.bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+      if(!Object.keys(fetchOptions.headers).includes("Accept")) {
+        fetchOptions.headers["Accept"] = "application/json";
+      }
+      if(!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+        fetchOptions.headers["Content-Type"] = "application/json";
+      }
+      Object.keys(fetchOptions.headers).forEach((key: string) => {
+        if(!fetchOptions.headers[key]) {
+          delete fetchOptions.headers[key];
+        }
+      });
+      fetchOptions.body = body;
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
   {{- range $url, $path := .Paths}}
     {{- range $method, $operation := $path}}
     /** {{$operation.Summary}} */
@@ -90,13 +153,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
     {{- else if eq $parameter.Type "array"}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
+    {{- else if eq $parameter.Type "object"}}
+    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Map<{{$parameter.AdditionalProperties.Type}}>,
     {{- else if eq $parameter.Type "integer"}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
     {{- else}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
     {{- end}}
     {{- " "}}
-    {{- end}}options: any = {}): Promise<{{$operation.Responses.Ok.Schema.Ref | cleanRef}}> {
+    {{- end}}options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
       {{- range $parameter := $operation.Parameters}}
       {{- $camelcase := $parameter.Name | camelCase}}
       {{- if $parameter.Required }}
@@ -121,57 +186,22 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       {{- end}}
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "{{- $method | uppercase}}" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
-
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
+      let _body = null;
       {{- range $parameter := $operation.Parameters}}
       {{- $camelcase := $parameter.Name | camelCase}}
       {{- if eq $parameter.In "body"}}
-      fetchOptions.body = JSON.stringify({{$camelcase}} || {});
+      _body = JSON.stringify({{$camelcase}} || {});
       {{- end}}
       {{- end}}
 
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
-        ),
-      ]);
+      return napi.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
     },
     {{- end}}
   {{- end}}
   };
+
+  return napi;
 };
 `
 
@@ -198,7 +228,7 @@ func snakeCaseToCamelCase(input string) (camelCase string) {
 }
 
 func convertRefToClassName(input string) (className string) {
-	cleanRef := strings.TrimLeft(input, "#/definitions/")
+	cleanRef := strings.TrimPrefix(input, "#/definitions/")
 	className = strings.Title(cleanRef)
 	return
 }
@@ -261,6 +291,9 @@ func main() {
 				Items struct { // used with type "array"
 					Type string
 					Ref  string `json:"$ref"`
+				}
+				AdditionalProperties struct {
+					Type string // used with type "map"
 				}
 				Format      string // used with type "boolean"
 				Description string

@@ -519,13 +519,6 @@ export interface ApiWriteStorageObjectsRequest {
   // The objects to store on the server.
   objects?: Array<ApiWriteStorageObject>;
 }
-/** service Foo {
-      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
-    }
-
-The JSON representation for `Empty` is empty JSON object `{}`. */
-export interface ProtobufEmpty {
-}
 
 export const NakamaApi = (configuration: ConfigurationParameters = {
   basePath: BASE_PATH,
@@ -534,13 +527,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   username: "",
   timeoutMs: 5000,
 }) => {
-  return {
-    /** A healthcheck which load balancers can use to check the service. */
-    healthcheck(options: any = {}): Promise<ProtobufEmpty> {
-      const urlPath = "/healthcheck";
-
-      const queryParams = {
-      } as any;
+  const napi = {
+    /** Perform the underlying Fetch operation and return Promise object **/
+    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
           if (queryParams[k] instanceof Array) {
@@ -555,32 +544,51 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         })
         .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
-
+      const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
+      fetchOptions.headers = {...options.headers};
       if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+        fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
       } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+        fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
       }
-
-      fetchOptions.headers = {...headers, ...options.headers};
+      if(!Object.keys(fetchOptions.headers).includes("Accept")) {
+        fetchOptions.headers["Accept"] = "application/json";
+      }
+      if(!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+        fetchOptions.headers["Content-Type"] = "application/json";
+      }
+      Object.keys(fetchOptions.headers).forEach((key: string) => {
+        if(!fetchOptions.headers[key]) {
+          delete fetchOptions.headers[key];
+        }
+      });
+      fetchOptions.body = body;
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
-            throw new Error(String(response.status));
+            throw response;
           }
         }),
         new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
         ),
       ]);
+    },
+    /** A healthcheck which load balancers can use to check the service. */
+    healthcheck(options: any = {}): Promise<any> {
+      const urlPath = "/healthcheck";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Fetch the current user's account. */
     getAccount(options: any = {}): Promise<ApiAccount> {
@@ -588,49 +596,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Update fields in the current user's account. */
-    updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<ProtobufEmpty> {
+    updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -638,47 +610,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -691,47 +627,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a device id against the server. */
     authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -744,47 +644,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with an email+password against the server. */
     authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -797,50 +661,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, import_?: boolean, options: any = {}): Promise<ApiSession> {
+    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -849,49 +677,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         create: create,
         username: username,
-        import: import_,
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        sync: sync,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Apple's GameCenter against the server. */
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -904,47 +696,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Google against the server. */
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -957,47 +713,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Steam against the server. */
     authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -1010,50 +730,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         create: create,
         username: username,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add a custom ID to the social profiles on the current user's account. */
-    linkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
+    linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1061,50 +745,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add a device ID to the social profiles on the current user's account. */
-    linkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
+    linkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1112,50 +760,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add an email+password to the social profiles on the current user's account. */
-    linkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
+    linkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1163,102 +775,30 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(body: ApiAccountFacebook, import_?: boolean, options: any = {}): Promise<ProtobufEmpty> {
+    linkFacebook(body: ApiAccountFacebook, sync?: boolean, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/facebook";
 
       const queryParams = {
-        import: import_,
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        sync: sync,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Apple's GameCenter to the social profiles on the current user's account. */
-    linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
+    linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1266,50 +806,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Google to the social profiles on the current user's account. */
-    linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
+    linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1317,50 +821,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Steam to the social profiles on the current user's account. */
-    linkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
+    linkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1368,50 +836,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the custom ID from the social profiles on the current user's account. */
-    unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1419,50 +851,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the device ID from the social profiles on the current user's account. */
-    unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1470,50 +866,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the email+password from the social profiles on the current user's account. */
-    unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1521,50 +881,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Facebook from the social profiles on the current user's account. */
-    unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1572,50 +896,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Apple's GameCenter from the social profiles on the current user's account. */
-    unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1623,50 +911,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Google from the social profiles on the current user's account. */
-    unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1674,50 +926,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Steam from the social profiles on the current user's account. */
-    unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1725,47 +941,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List a channel's message history. */
     listChannelMessages(channelId: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
@@ -1780,95 +960,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         forward: forward,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete one or more users by ID or username. */
-    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
+    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
         ids: ids,
         usernames: usernames,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** List all friends for the current user. */
     listFriends(options: any = {}): Promise<ApiFriends> {
@@ -1876,143 +984,39 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Add friends by ID or username to a user's account. */
-    addFriends(options: any = {}): Promise<ProtobufEmpty> {
+    addFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        ids: ids,
+        usernames: usernames,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
 
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Block one or more users by ID or username. */
-    blockFriends(options: any = {}): Promise<ProtobufEmpty> {
+    blockFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend/block";
 
       const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        ids: ids,
+        usernames: usernames,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
 
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<ProtobufEmpty> {
+    importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -2021,47 +1025,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         reset: reset,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List groups based on given filters. */
     listGroups(name?: string, cursor?: string, limit?: number, options: any = {}): Promise<ApiGroupList> {
@@ -2072,46 +1040,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
         limit: limit,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Create a new group with the current user as the owner. */
     createGroup(body: ApiCreateGroupRequest, options: any = {}): Promise<ApiGroup> {
@@ -2122,50 +1054,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Delete a group by ID. */
-    deleteGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    deleteGroup(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2174,49 +1070,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** Update fields in a given group. */
-    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2228,50 +1088,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Add users to a group. */
-    addGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    addGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2279,50 +1103,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        user_ids: userIds,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
 
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Immediately join an open group, or request to join a closed one. */
-    joinGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    joinGroup(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2331,49 +1120,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    kickGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2381,50 +1134,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        user_ids: userIds,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
 
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Leave a group the user is a member of. */
-    leaveGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    leaveGroup(groupId: string, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2433,49 +1151,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    promoteGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -2483,47 +1165,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        user_ids: userIds,
       } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+      let _body = null;
 
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List all users that are part of a group. */
     listGroupUsers(groupId: string, options: any = {}): Promise<ApiGroupUserList> {
@@ -2535,49 +1182,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete a leaderboard record. */
-    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<ProtobufEmpty> {
+    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<any> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
@@ -2586,46 +1197,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** List leaderboard records. */
     listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
@@ -2640,46 +1215,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Write a record to a leaderboard. */
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
@@ -2694,47 +1233,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List leaderboard records that belong to a user. */
     listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
@@ -2751,46 +1254,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         limit: limit,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Fetch list of running matches. */
     listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string, options: any = {}): Promise<ApiMatchList> {
@@ -2804,94 +1271,22 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         max_size: maxSize,
         query: query,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete one or more notifications for the current user. */
-    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
+    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/notification";
 
       const queryParams = {
         ids: ids,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** Fetch list of notifications. */
     listNotifications(limit?: number, cacheableCursor?: string, options: any = {}): Promise<ApiNotificationList> {
@@ -2901,46 +1296,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cacheable_cursor: cacheableCursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Execute a Lua function on the server. */
     rpcFunc2(id: string, payload?: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
@@ -2954,46 +1313,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         payload: payload,
         http_key: httpKey,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Execute a Lua function on the server. */
     rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
@@ -3008,47 +1331,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Get storage objects. */
     readStorageObjects(body: ApiReadStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjects> {
@@ -3059,47 +1346,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Write objects into the storage engine. */
     writeStorageObjects(body: ApiWriteStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjectAcks> {
@@ -3110,50 +1361,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Delete one or more objects by ID or username. */
-    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<ProtobufEmpty> {
+    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -3161,47 +1376,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** List publicly readable storage objects in a given collection. */
     listStorageObjects(collection: string, userId?: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
@@ -3216,46 +1395,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List publicly readable storage objects in a given collection. */
     listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
@@ -3273,46 +1416,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List current or upcoming tournaments. */
     listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
@@ -3326,46 +1433,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List tournament records. */
     listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentRecordList> {
@@ -3380,46 +1451,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         cursor: cursor,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Write a record to a tournament. */
     writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
@@ -3434,50 +1469,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
+      _body = JSON.stringify(body || {});
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Attempt to join an open and running tournament. */
-    joinTournament(tournamentId: string, options: any = {}): Promise<ProtobufEmpty> {
+    joinTournament(tournamentId: string, options: any = {}): Promise<any> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
@@ -3486,46 +1485,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List tournament records for a given owner. */
     listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
@@ -3542,46 +1505,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         limit: limit,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Fetch zero or more users by ID and/or username. */
     getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options: any = {}): Promise<ApiUsers> {
@@ -3592,46 +1519,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         usernames: usernames,
         facebook_ids: facebookIds,
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List groups the current user belongs to. */
     listUserGroups(userId: string, options: any = {}): Promise<ApiUserGroupList> {
@@ -3643,46 +1534,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+      let _body = null;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw new Error(String(response.status));
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, new Error("Request timed out."))
-        ),
-      ]);
+      return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
   };
+
+  return napi;
 };
