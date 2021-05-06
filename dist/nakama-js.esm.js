@@ -649,6 +649,20 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
+        authenticateApple: function (body, create, username, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/authenticate/apple";
+            var queryParams = {
+                create: create,
+                username: username,
+            };
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         authenticateCustom: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -748,6 +762,17 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
+        linkApple: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/link/apple";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         linkCustom: function (body, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -822,6 +847,17 @@ var NakamaApi = function (configuration) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/link/steam";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
+        unlinkApple: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/unlink/apple";
             var queryParams = {};
             var _body = null;
             _body = JSON.stringify(body || {});
@@ -936,23 +972,17 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
-        addFriends: function (ids, usernames, options) {
+        addFriends: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
-            var queryParams = {
-                ids: ids,
-                usernames: usernames,
-            };
+            var queryParams = {};
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        blockFriends: function (ids, usernames, options) {
+        blockFriends: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend/block";
-            var queryParams = {
-                ids: ids,
-                usernames: usernames,
-            };
+            var queryParams = {};
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1017,29 +1047,14 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
-        addGroupUsers: function (groupId, userIds, options) {
+        addGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {
-                user_ids: userIds,
-            };
-            var _body = null;
-            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-        },
-        banGroupUsers: function (groupId, userIds, options) {
-            if (options === void 0) { options = {}; }
-            if (groupId === null || groupId === undefined) {
-                throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            var urlPath = "/v2/group/{group_id}/ban"
-                .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {
-                user_ids: userIds,
-            };
+            var queryParams = {};
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1054,16 +1069,14 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        kickGroupUsers: function (groupId, userIds, options) {
+        kickGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/kick"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {
-                user_ids: userIds,
-            };
+            var queryParams = {};
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1078,16 +1091,14 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        promoteGroupUsers: function (groupId, userIds, options) {
+        promoteGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/promote"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {
-                user_ids: userIds,
-            };
+            var queryParams = {};
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1207,7 +1218,7 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
-        rpcFunc: function (id, body, options) {
+        rpcFunc: function (id, body, httpKey, options) {
             if (options === void 0) { options = {}; }
             if (id === null || id === undefined) {
                 throw new Error("'id' is a required parameter but is null or undefined.");
@@ -1217,7 +1228,9 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/rpc/{id}"
                 .replace("{id}", encodeURIComponent(String(id)));
-            var queryParams = {};
+            var queryParams = {
+                http_key: httpKey,
+            };
             var _body = null;
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
@@ -1999,6 +2012,60 @@ var Client = (function () {
             return Session.restore(apiSession.token || "");
         });
     };
+    Client.prototype.authenticateApple = function (request) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/apple";
+        var queryParams = {
+            token: request.token,
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            token: request.token,
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
+                    });
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+            }),
+        ]).then(function (apiSession) {
+            return Session.restore(apiSession.token || "");
+        });
+    };
     Client.prototype.authenticateGoogle = function (request) {
         var _this = this;
         var urlPath = "/v2/account/authenticate/google";
@@ -2398,6 +2465,7 @@ var Client = (function () {
                     display_name: u.display_name,
                     edge_count: u.edge_count ? Number(u.edge_count) : 0,
                     facebook_id: u.facebook_id,
+                    apple_id: u.apple_id,
                     gamecenter_id: u.gamecenter_id,
                     google_id: u.google_id,
                     id: u.id,
@@ -2630,6 +2698,12 @@ var Client = (function () {
     Client.prototype.linkFacebook = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.linkFacebook(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.linkApple = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkApple(request).then(function (response) {
             return response !== undefined;
         });
     };
@@ -3088,6 +3162,12 @@ var Client = (function () {
             return response !== undefined;
         });
     };
+    Client.prototype.unlinkApple = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.unlinkApple(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
     Client.prototype.unlinkGoogle = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.unlinkGoogle(request).then(function (response) {
@@ -3175,41 +3255,6 @@ var Client = (function () {
                 max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
                 rank: response.rank ? Number(response.rank) : 0,
             });
-        });
-    };
-    Client.prototype.listFriends = function (session) {
-        this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listFriends().then(function (response) {
-            var result = {
-                friends: []
-            };
-            if (response.friends == null) {
-                return Promise.resolve(result);
-            }
-            response.friends.forEach(function (f) {
-                result.friends.push({
-                    user: {
-                        avatar_url: f.user.avatar_url,
-                        create_time: f.user.create_time,
-                        display_name: f.user.display_name,
-                        edge_count: f.user.edge_count,
-                        facebook_id: f.user.facebook_id,
-                        gamecenter_id: f.user.gamecenter_id,
-                        google_id: f.user.google_id,
-                        id: f.user.id,
-                        lang_tag: f.user.lang_tag,
-                        location: f.user.location,
-                        online: f.user.online,
-                        steam_id: f.user.steam_id,
-                        timezone: f.user.timezone,
-                        update_time: f.user.update_time,
-                        username: f.user.username,
-                        metadata: f.user.metadata ? JSON.parse(f.user.metadata) : null
-                    },
-                    state: f.state
-                });
-            });
-            return Promise.resolve(result);
         });
     };
     return Client;
