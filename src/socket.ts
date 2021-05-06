@@ -263,7 +263,7 @@ export interface Socket {
     LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
   // Handle disconnect events received from the socket.
-  ondisconnect: (evt: Event) => void;
+  ondisconnect: (evt: CloseEvent) => void;
   // Handle error events received from the socket.
   onerror: (evt: Event) => void;
   // Receive notifications from the socket.
@@ -325,7 +325,7 @@ export class DefaultSocket implements Socket {
     const socket = new WebSocket(url);
     this.socket = socket;
 
-    socket.onclose = (evt: Event) => {
+    socket.onclose = (evt: CloseEvent) => {
       if (this.socket !== socket) {
         return;
       }
@@ -415,11 +415,11 @@ export class DefaultSocket implements Socket {
         }
         resolve(session);
       }
-      socket.onerror = () => {
+      socket.onerror = (evt: Event) => {
         if (this.socket !== socket) {
           return;
         }
-        reject(new Error("connect onerror"));
+        reject(new Error("connect onerror: " + evt));
         socket.close();
       }
     });
@@ -430,11 +430,11 @@ export class DefaultSocket implements Socket {
       this.socket.close();
     }
     if (fireDisconnectEvent) {
-      this.ondisconnect(<Event>{});
+      this.ondisconnect(<CloseEvent>{});
     }
   }
 
-  ondisconnect(evt: Event) {
+  ondisconnect(evt: CloseEvent) {
     if (this.verbose && window && window.console) {
       console.log(evt);
     }
@@ -515,7 +515,7 @@ export class DefaultSocket implements Socket {
           m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
           m.match_data_send.op_code = m.match_data_send.op_code.toString();
           this.socket.send(JSON.stringify(m));
-          resolve();
+          resolve(null);
         } else {
           if (m.channel_message_send) {
             m.channel_message_send.content = JSON.stringify(m.channel_message_send.content);

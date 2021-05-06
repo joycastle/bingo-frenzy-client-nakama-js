@@ -1536,11 +1536,11 @@
                   }
                   resolve(session);
               };
-              socket.onerror = function () {
+              socket.onerror = function (evt) {
                   if (_this.socket !== socket) {
                       return;
                   }
-                  reject(new Error("connect onerror"));
+                  reject(new Error("connect onerror: " + evt));
                   socket.close();
               };
           });
@@ -1624,7 +1624,7 @@
                       m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
                       m.match_data_send.op_code = m.match_data_send.op_code.toString();
                       _this.socket.send(JSON.stringify(m));
-                      resolve();
+                      resolve(null);
                   }
                   else {
                       if (m.channel_message_send) {
@@ -3181,6 +3181,41 @@
                   max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
                   rank: response.rank ? Number(response.rank) : 0,
               });
+          });
+      };
+      Client.prototype.listFriends = function (session) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.listFriends().then(function (response) {
+              var result = {
+                  friends: []
+              };
+              if (response.friends == null) {
+                  return Promise.resolve(result);
+              }
+              response.friends.forEach(function (f) {
+                  result.friends.push({
+                      user: {
+                          avatar_url: f.user.avatar_url,
+                          create_time: f.user.create_time,
+                          display_name: f.user.display_name,
+                          edge_count: f.user.edge_count,
+                          facebook_id: f.user.facebook_id,
+                          gamecenter_id: f.user.gamecenter_id,
+                          google_id: f.user.google_id,
+                          id: f.user.id,
+                          lang_tag: f.user.lang_tag,
+                          location: f.user.location,
+                          online: f.user.online,
+                          steam_id: f.user.steam_id,
+                          timezone: f.user.timezone,
+                          update_time: f.user.update_time,
+                          username: f.user.username,
+                          metadata: f.user.metadata ? JSON.parse(f.user.metadata) : null
+                      },
+                      state: f.state
+                  });
+              });
+              return Promise.resolve(result);
           });
       };
       return Client;
