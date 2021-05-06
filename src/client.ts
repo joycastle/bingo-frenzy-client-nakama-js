@@ -832,7 +832,8 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create
+      create: request.create,
+      sync: false,
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -860,7 +861,7 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      token: request.token
+      token: request.token,
     });
 
     return Promise.race([
@@ -1644,7 +1645,7 @@ export class Client {
   /** Add Facebook to the social profiles on the current user's account. */
   linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkFacebook(request).then((response: any) => {
+    return this.apiClient.linkFacebook(request, false).then((response: any) => {
       return response !== undefined;
     });
   }
