@@ -1968,7 +1968,8 @@
           var urlPath = "/v2/account/authenticate/facebook";
           var queryParams = {
               username: request.username,
-              create: request.create
+              create: request.create,
+              sync: false,
           };
           var urlQuery = "?" + Object.keys(queryParams)
               .map(function (k) {
@@ -1994,7 +1995,7 @@
           }
           fetchOptions.headers = __assign({}, headers);
           fetchOptions.body = JSON.stringify({
-              token: request.token
+              token: request.token,
           });
           return Promise.race([
               fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -2703,7 +2704,7 @@
       };
       Client.prototype.linkFacebook = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkFacebook(request).then(function (response) {
+          return this.apiClient.linkFacebook(request, false).then(function (response) {
               return response !== undefined;
           });
       };
