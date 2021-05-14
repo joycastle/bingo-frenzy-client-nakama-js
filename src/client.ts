@@ -1354,9 +1354,9 @@ export class Client {
   }
 
   /** Import Facebook friends and add them to a user's account. */
-  importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+  importFacebookFriends(session: Session, request: ApiAccountFacebook, reset: boolean): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.importFacebookFriends(request).then((response: any) => {
+    return this.apiClient.importFacebookFriends(request, reset).then((response: any) => {
       return response !== undefined;
     });
   }

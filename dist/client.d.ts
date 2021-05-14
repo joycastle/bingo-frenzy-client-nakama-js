@@ -251,7 +251,7 @@ export declare class Client {
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
-    importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
+    importFacebookFriends(session: Session, request: ApiAccountFacebook, reset: boolean): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users>;
     joinGroup(session: Session, groupId: string): Promise<boolean>;
     joinTournament(session: Session, tournamentId: string): Promise<boolean>;

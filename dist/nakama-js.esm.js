@@ -2444,9 +2444,9 @@ var Client = (function () {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.getAccount();
     };
-    Client.prototype.importFacebookFriends = function (session, request) {
+    Client.prototype.importFacebookFriends = function (session, request, reset) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.importFacebookFriends(request).then(function (response) {
+        return this.apiClient.importFacebookFriends(request, reset).then(function (response) {
             return response !== undefined;
         });
     };
