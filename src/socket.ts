@@ -284,6 +284,10 @@ export interface Socket {
   onchannelmessage: (channelMessage: ChannelMessage) => void;
   // Receive channel presence updates.
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
+  // send ping to server
+  sendPing(): void;
+  // Receive pong message.
+  onpong: () => void;
 }
 
 /** Reports an error received from a socket message. */
@@ -341,6 +345,10 @@ export class DefaultSocket implements Socket {
 
     socket.onmessage = (evt: MessageEvent) => {
       if (this.socket !== socket) {
+        return;
+      }
+      if (evt.data === "pong") {
+        this.onpong();
         return;
       }
       const message = JSON.parse(evt.data);
@@ -536,5 +544,21 @@ export class DefaultSocket implements Socket {
         console.log("Sent message: %o", m);
       }
     });
+  }
+
+  sendPing() {
+    if (!this.socket) {
+      return;
+    }
+    if (this.socket.readyState !== 1) {
+      return;
+    }
+    this.socket.send("ping");
+  }
+
+  onpong() {
+    if (this.verbose && window && window.console) {
+      console.log("received pong");
+    }
   }
 };
