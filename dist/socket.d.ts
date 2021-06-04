@@ -189,6 +189,8 @@ export interface Socket {
     onstreamdata: (streamData: StreamData) => void;
     onchannelmessage: (channelMessage: ChannelMessage) => void;
     onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
+    sendPing(): void;
+    onpong: () => void;
 }
 export interface SocketError {
     code: number;
@@ -218,5 +220,7 @@ export declare class DefaultSocket implements Socket {
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+    sendPing(): void;
+    onpong(): void;
 }
 export {};

@@ -1470,6 +1470,10 @@
               if (_this.socket !== socket) {
                   return;
               }
+              if (evt.data === "pong") {
+                  _this.onpong();
+                  return;
+              }
               var message = JSON.parse(evt.data);
               if (_this.verbose && window && window.console) {
                   console.log("Response: %o", message);
@@ -1656,6 +1660,20 @@
                   console.log("Sent message: %o", m);
               }
           });
+      };
+      DefaultSocket.prototype.sendPing = function () {
+          if (!this.socket) {
+              return;
+          }
+          if (this.socket.readyState !== 1) {
+              return;
+          }
+          this.socket.send("ping");
+      };
+      DefaultSocket.prototype.onpong = function () {
+          if (this.verbose && window && window.console) {
+              console.log("received pong");
+          }
       };
       return DefaultSocket;
   }());
