@@ -351,7 +351,17 @@ export class DefaultSocket implements Socket {
         this.onpong();
         return;
       }
-      const message = JSON.parse(evt.data);
+
+      let message = null;
+      try {
+        message = JSON.parse(evt.data);
+      } catch (e) {
+        console.error(e);
+        console.log("can not parse data:", evt.data);
+        this.onerror(evt);
+        return;
+      }
+
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
       }

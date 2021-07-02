@@ -1474,7 +1474,16 @@
                   _this.onpong();
                   return;
               }
-              var message = JSON.parse(evt.data);
+              var message = null;
+              try {
+                  message = JSON.parse(evt.data);
+              }
+              catch (e) {
+                  console.error(e);
+                  console.log("can not parse data:", evt.data);
+                  _this.onerror(evt);
+                  return;
+              }
               if (_this.verbose && window && window.console) {
                   console.log("Response: %o", message);
               }
