@@ -1,3 +1,5 @@
+import { deflateRaw, inflateRaw } from 'pako';
+
 (function () {
 
   var object =
@@ -1431,6 +1433,8 @@ var DefaultSocket = (function () {
         this.port = port;
         this.useSSL = useSSL;
         this.verbose = verbose;
+        this.useBuffer = false;
+        this.compressionThreshold = 500;
         this.cIds = {};
         this.nextCid = 1;
     }
@@ -1439,15 +1443,20 @@ var DefaultSocket = (function () {
         ++this.nextCid;
         return cid;
     };
-    DefaultSocket.prototype.connect = function (session, createStatus) {
+    DefaultSocket.prototype.connect = function (session, createStatus, useBuffer, compressionThreshold) {
         var _this = this;
         if (createStatus === void 0) { createStatus = false; }
+        if (useBuffer === void 0) { useBuffer = false; }
+        if (compressionThreshold === void 0) { compressionThreshold = 500; }
+        this.useBuffer = useBuffer;
+        this.compressionThreshold = compressionThreshold;
         if (this.socket !== undefined && this.socket.readyState === 1) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
-        var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token);
+        var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token) + "&format=" + (useBuffer ? "protobuf" : "json");
         var socket = new WebSocket(url);
+        socket.binaryType = "arraybuffer";
         this.socket = socket;
         socket.onclose = function (evt) {
             if (_this.socket !== socket) {
@@ -1464,17 +1473,18 @@ var DefaultSocket = (function () {
             if (_this.socket !== socket) {
                 return;
             }
-            if (evt.data === "pong") {
+            var data = _this.convertRecvData(evt.data);
+            if (data === "pong") {
                 _this.onpong();
                 return;
             }
             var message = null;
             try {
-                message = JSON.parse(evt.data);
+                message = JSON.parse(data);
             }
             catch (e) {
                 console.error(e);
-                console.log("can not parse data:", evt.data);
+                console.log("can not parse data:", data);
                 _this.onerror(evt);
                 return;
             }
@@ -1643,7 +1653,7 @@ var DefaultSocket = (function () {
                 if (m.match_data_send) {
                     m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
                     m.match_data_send.op_code = m.match_data_send.op_code.toString();
-                    _this.socket.send(JSON.stringify(m));
+                    _this.socket.send(_this.convertSendData(JSON.stringify(m)));
                     resolve(null);
                 }
                 else {
@@ -1656,7 +1666,7 @@ var DefaultSocket = (function () {
                     var cid = _this.generatecid();
                     _this.cIds[cid] = { resolve: resolve, reject: reject };
                     m.cid = cid;
-                    _this.socket.send(JSON.stringify(m));
+                    _this.socket.send(_this.convertSendData(JSON.stringify(m)));
                 }
             }
             if (_this.verbose && window && window.console) {
@@ -1671,12 +1681,33 @@ var DefaultSocket = (function () {
         if (this.socket.readyState !== 1) {
             return;
         }
-        this.socket.send("ping");
+        this.socket.send(this.convertSendData("ping"));
     };
     DefaultSocket.prototype.onpong = function () {
         if (this.verbose && window && window.console) {
             console.log("received pong");
         }
+    };
+    DefaultSocket.prototype.convertSendData = function (data) {
+        if (!this.useBuffer) {
+            return data;
+        }
+        var sendBuff = Buffer.from(data);
+        if (sendBuff.byteLength < this.compressionThreshold) {
+            return Buffer.concat([Buffer.from([0]), sendBuff]);
+        }
+        var compressedBuff = Buffer.from(deflateRaw(sendBuff, { level: 1 }));
+        return Buffer.concat([Buffer.from([1]), compressedBuff]);
+    };
+    DefaultSocket.prototype.convertRecvData = function (data) {
+        if (typeof data === "string") {
+            return data;
+        }
+        var recvBuff = Buffer.from(data);
+        if (recvBuff[0] === 0) {
+            return recvBuff.slice(1).toString();
+        }
+        return Buffer.from(inflateRaw(recvBuff.slice(1))).toString();
     };
     return DefaultSocket;
 }());

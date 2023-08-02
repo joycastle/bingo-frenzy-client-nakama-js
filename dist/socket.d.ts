@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
@@ -175,7 +176,7 @@ export interface StatusUpdate {
     };
 }
 export interface Socket {
-    connect(session: Session, createStatus: boolean): Promise<Session>;
+    connect(session: Session, createStatus: boolean, useBuffer: boolean, compressionThreshold: number): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
     ondisconnect: (evt: CloseEvent) => void;
@@ -204,9 +205,11 @@ export declare class DefaultSocket implements Socket {
     private socket?;
     private cIds;
     private nextCid;
+    private useBuffer;
+    private compressionThreshold;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
-    connect(session: Session, createStatus?: boolean): Promise<Session>;
+    connect(session: Session, createStatus?: boolean, useBuffer?: boolean, compressionThreshold?: number): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
     ondisconnect(evt: CloseEvent): void;
     onerror(evt: Event): void;
@@ -222,5 +225,7 @@ export declare class DefaultSocket implements Socket {
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
     sendPing(): void;
     onpong(): void;
+    convertSendData(data: string): string | Buffer;
+    convertRecvData(data: string | Buffer): string;
 }
 export {};
