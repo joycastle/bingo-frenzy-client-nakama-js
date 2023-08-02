@@ -17,6 +17,7 @@
 import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
+import { deflateRaw, inflateRaw} from "pako";
 
 type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 
@@ -254,7 +255,7 @@ export interface StatusUpdate {
 /** A socket connection to Nakama server. */
 export interface Socket {
   // Connect to the server.
-  connect(session: Session, createStatus: boolean): Promise<Session>;
+  connect(session: Session, createStatus: boolean, useBuffer: boolean, compressionThreshold: number): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
   // Send message to the server.
@@ -303,6 +304,8 @@ export class DefaultSocket implements Socket {
   private socket?: WebSocket;
   private cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
+  private useBuffer: boolean = false;
+  private compressionThreshold: number = 500;
 
   constructor(
       readonly host: string,
@@ -319,14 +322,17 @@ export class DefaultSocket implements Socket {
     return cid;
   }
 
-  connect(session: Session, createStatus: boolean = false): Promise<Session> {
+  connect(session: Session, createStatus: boolean = false, useBuffer: boolean = false, compressionThreshold: number = 500): Promise<Session> {
+    this.useBuffer = useBuffer;
+    this.compressionThreshold = compressionThreshold;
     if (this.socket !== undefined && this.socket.readyState === 1) {
       return Promise.resolve(session);
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}`;
+    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}&format=${useBuffer ? "protobuf" : "json"}`;
     const socket = new WebSocket(url);
+    socket.binaryType = "arraybuffer";
     this.socket = socket;
 
     socket.onclose = (evt: CloseEvent) => {
@@ -347,17 +353,18 @@ export class DefaultSocket implements Socket {
       if (this.socket !== socket) {
         return;
       }
-      if (evt.data === "pong") {
+      const data = this.convertRecvData(evt.data);
+      if (data === "pong") {
         this.onpong();
         return;
       }
 
       let message = null;
       try {
-        message = JSON.parse(evt.data);
+        message = JSON.parse(data);
       } catch (e) {
         console.error(e);
-        console.log("can not parse data:", evt.data);
+        console.log("can not parse data:", data);
         this.onerror(evt);
         return;
       }
@@ -532,7 +539,7 @@ export class DefaultSocket implements Socket {
         if (m.match_data_send) {
           m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
           m.match_data_send.op_code = m.match_data_send.op_code.toString();
-          this.socket.send(JSON.stringify(m));
+          this.socket.send(this.convertSendData(JSON.stringify(m)));
           resolve(null);
         } else {
           if (m.channel_message_send) {
@@ -546,7 +553,7 @@ export class DefaultSocket implements Socket {
 
           // Add id for promise executor.
           m.cid = cid;
-          this.socket.send(JSON.stringify(m));
+          this.socket.send(this.convertSendData(JSON.stringify(m)));
         }
       }
 
@@ -563,12 +570,35 @@ export class DefaultSocket implements Socket {
     if (this.socket.readyState !== 1) {
       return;
     }
-    this.socket.send("ping");
+    this.socket.send(this.convertSendData("ping"));
   }
 
   onpong() {
     if (this.verbose && window && window.console) {
       console.log("received pong");
     }
+  }
+
+  convertSendData(data: string): string | Buffer {
+    if (!this.useBuffer) {
+      return data;
+    }
+    const sendBuff = Buffer.from(data);
+    if (sendBuff.byteLength < this.compressionThreshold) {
+      return Buffer.concat([Buffer.from([0]), sendBuff]);
+    }
+    const compressedBuff = Buffer.from(deflateRaw(sendBuff, {level: 1}));
+    return Buffer.concat([Buffer.from([1]), compressedBuff]);
+  }
+
+  convertRecvData(data: string | Buffer): string {
+    if (typeof data === "string") {
+      return data;
+    }
+    const recvBuff = Buffer.from(data);
+    if (recvBuff[0] === 0) {
+      return recvBuff.slice(1).toString();
+    }
+    return Buffer.from(inflateRaw(recvBuff.slice(1))).toString();
   }
 };

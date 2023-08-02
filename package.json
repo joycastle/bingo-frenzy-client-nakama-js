@@ -34,12 +34,7 @@
     "src"
   ],
   "resolutions": {
-    "**/exec-sh": "^0.3.2",
-    "**/request": "^2.68.0",
-    "**/highlight.js": "^9.15.5",
-    "**/knox": "^0.9.2",
-    "**/less": "^1.7.5",
-    "**/uglify-js": "^2.6.0"
+    "**/event-stream": "^4.0.1"
   },
   "devDependencies": {
     "chalk": "^2.4.2",
@@ -54,10 +49,10 @@
     "typescript": "^3.5.0"
   },
   "dependencies": {
+    "@types/pako": "^2.0.0",
     "Base64": "^1.0.1",
+    "buffer": "^6.0.3",
+    "pako": "^2.1.0",
     "whatwg-fetch": "^2.0.3"
-  },
-  "resolutions": {
-    "**/event-stream": "^4.0.1"
   }
 }
