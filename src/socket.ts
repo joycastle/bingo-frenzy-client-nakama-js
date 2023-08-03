@@ -330,7 +330,7 @@ export class DefaultSocket implements Socket {
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}&format=${useBuffer ? "protobuf" : "json"}`;
+    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}&format=${useBuffer ? "binary" : "json"}`;
     const socket = new WebSocket(url);
     socket.binaryType = "arraybuffer";
     this.socket = socket;
