@@ -585,10 +585,10 @@ export class DefaultSocket implements Socket {
     }
     const sendBuff = Buffer.from(data);
     if (sendBuff.byteLength < this.compressionThreshold) {
-      return Buffer.concat([Buffer.from([0]), sendBuff]);
+      return Buffer.concat([sendBuff, Buffer.from([0])]);
     }
     const compressedBuff = Buffer.from(deflateRaw(sendBuff, {level: 1}));
-    return Buffer.concat([Buffer.from([1]), compressedBuff]);
+    return Buffer.concat([compressedBuff, Buffer.from([1])]);
   }
 
   convertRecvData(data: string | Buffer): string {
@@ -596,9 +596,9 @@ export class DefaultSocket implements Socket {
       return data;
     }
     const recvBuff = Buffer.from(data);
-    if (recvBuff[0] === 0) {
-      return recvBuff.slice(1).toString();
+    if (recvBuff[recvBuff.length - 1] === 0) {
+      return recvBuff.slice(0, recvBuff.length - 1).toString();
     }
-    return Buffer.from(inflateRaw(recvBuff.slice(1))).toString();
+    return Buffer.from(inflateRaw(recvBuff.slice(0, recvBuff.length - 1))).toString();
   }
 };
