@@ -1458,7 +1458,7 @@
               return Promise.resolve(session);
           }
           var scheme = (this.useSSL) ? "wss://" : "ws://";
-          var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token) + "&format=" + (useBuffer ? "binary" : "json");
+          var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token) + "&format=" + (useBuffer ? "binary" : "json") + "&compression_threshold=" + compressionThreshold;
           var socket = new WebSocket(url);
           socket.binaryType = "arraybuffer";
           this.socket = socket;
