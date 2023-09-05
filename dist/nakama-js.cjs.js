@@ -1439,6 +1439,8 @@ var DefaultSocket = (function () {
         this.verbose = verbose;
         this.useBuffer = false;
         this.compressionThreshold = 500;
+        this.recentSendData = [];
+        this.recentRecvData = [];
         this.cIds = {};
         this.nextCid = 1;
     }
@@ -1471,6 +1473,8 @@ var DefaultSocket = (function () {
                 executor.reject(new Error("socket closed"));
             });
             _this.cIds = {};
+            console.log("recent send data:", _this.recentSendData.join(","));
+            console.log("recent recv data:", _this.recentRecvData.join(","));
             _this.ondisconnect(evt);
         };
         socket.onmessage = function (evt) {
@@ -1698,16 +1702,23 @@ var DefaultSocket = (function () {
         }
         var sendBuff = Buffer.from(data);
         if (sendBuff.byteLength < this.compressionThreshold) {
-            return Buffer.concat([sendBuff, Buffer.from([0])]);
+            sendBuff = Buffer.concat([sendBuff, Buffer.from([0])]);
         }
-        var compressedBuff = Buffer.from(pako.deflateRaw(sendBuff, { level: 1 }));
-        return Buffer.concat([compressedBuff, Buffer.from([1])]);
+        else {
+            var compressedBuff = Buffer.from(pako.deflateRaw(sendBuff, { level: 1 }));
+            sendBuff = Buffer.concat([compressedBuff, Buffer.from([1])]);
+        }
+        this.recentSendData.push(sendBuff.toString("base64"));
+        this.recentSendData.splice(0, this.recentSendData.length - 2);
+        return sendBuff;
     };
     DefaultSocket.prototype.convertRecvData = function (data) {
         if (typeof data === "string") {
             return data;
         }
         var recvBuff = Buffer.from(data);
+        this.recentRecvData.push(recvBuff.toString("base64"));
+        this.recentRecvData.splice(0, this.recentRecvData.length - 2);
         if (recvBuff[recvBuff.length - 1] === 0) {
             return recvBuff.slice(0, recvBuff.length - 1).toString();
         }

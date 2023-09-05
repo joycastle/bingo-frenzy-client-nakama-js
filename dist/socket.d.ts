@@ -207,6 +207,8 @@ export declare class DefaultSocket implements Socket {
     private nextCid;
     private useBuffer;
     private compressionThreshold;
+    private recentSendData;
+    private recentRecvData;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
     connect(session: Session, createStatus?: boolean, useBuffer?: boolean, compressionThreshold?: number): Promise<Session>;

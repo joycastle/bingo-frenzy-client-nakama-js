@@ -306,6 +306,8 @@ export class DefaultSocket implements Socket {
   private nextCid: number;
   private useBuffer: boolean = false;
   private compressionThreshold: number = 500;
+  private recentSendData: string[] = [];
+  private recentRecvData: string[] = [];
 
   constructor(
       readonly host: string,
@@ -345,6 +347,9 @@ export class DefaultSocket implements Socket {
         executor.reject(new Error("socket closed"));
       });
       this.cIds = {};
+
+      console.log("recent send data:", this.recentSendData.join(","));
+      console.log("recent recv data:", this.recentRecvData.join(","));
       
       this.ondisconnect(evt);
     }
@@ -583,12 +588,16 @@ export class DefaultSocket implements Socket {
     if (!this.useBuffer) {
       return data;
     }
-    const sendBuff = Buffer.from(data);
+    let sendBuff = Buffer.from(data);
     if (sendBuff.byteLength < this.compressionThreshold) {
-      return Buffer.concat([sendBuff, Buffer.from([0])]);
+      sendBuff = Buffer.concat([sendBuff, Buffer.from([0])]);
+    } else {
+      const compressedBuff = Buffer.from(deflateRaw(sendBuff, {level: 1}));
+      sendBuff = Buffer.concat([compressedBuff, Buffer.from([1])]);
     }
-    const compressedBuff = Buffer.from(deflateRaw(sendBuff, {level: 1}));
-    return Buffer.concat([compressedBuff, Buffer.from([1])]);
+    this.recentSendData.push(sendBuff.toString("base64"));
+    this.recentSendData.splice(0, this.recentSendData.length - 2)
+    return sendBuff;
   }
 
   convertRecvData(data: string | Buffer): string {
@@ -596,6 +605,8 @@ export class DefaultSocket implements Socket {
       return data;
     }
     const recvBuff = Buffer.from(data);
+    this.recentRecvData.push(recvBuff.toString("base64"));
+    this.recentRecvData.splice(0, this.recentRecvData.length - 2)
     if (recvBuff[recvBuff.length - 1] === 0) {
       return recvBuff.slice(0, recvBuff.length - 1).toString();
     }
