@@ -665,6 +665,20 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
+        authenticateAmazon: function (body, create, username, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/authenticate/amazon";
+            var queryParams = {
+                create: create,
+                username: username,
+            };
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         authenticateCustom: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -775,6 +789,17 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
+        linkAmazon: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/link/amazon";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         linkCustom: function (body, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -860,6 +885,17 @@ var NakamaApi = function (configuration) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/unlink/apple";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
+        unlinkAmazon: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/unlink/amazon";
             var queryParams = {};
             var _body = null;
             _body = JSON.stringify(body || {});
@@ -2136,6 +2172,60 @@ var Client = (function () {
             return Session.restore(apiSession.token || "");
         });
     };
+    Client.prototype.authenticateAmazon = function (request) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/amazon";
+        var queryParams = {
+            token: request.token,
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            token: request.token,
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
+                    });
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+            }),
+        ]).then(function (apiSession) {
+            return Session.restore(apiSession.token || "");
+        });
+    };
     Client.prototype.authenticateGoogle = function (request) {
         var _this = this;
         var urlPath = "/v2/account/authenticate/google";
@@ -2536,6 +2626,7 @@ var Client = (function () {
                     edge_count: u.edge_count ? Number(u.edge_count) : 0,
                     facebook_id: u.facebook_id,
                     apple_id: u.apple_id,
+                    amazon_id: u.amazon_id,
                     gamecenter_id: u.gamecenter_id,
                     google_id: u.google_id,
                     id: u.id,
@@ -2774,6 +2865,12 @@ var Client = (function () {
     Client.prototype.linkApple = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.linkApple(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.linkAmazon = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkAmazon(request).then(function (response) {
             return response !== undefined;
         });
     };
@@ -3235,6 +3332,12 @@ var Client = (function () {
     Client.prototype.unlinkApple = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.unlinkApple(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.unlinkAmazon = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.unlinkAmazon(request).then(function (response) {
             return response !== undefined;
         });
     };

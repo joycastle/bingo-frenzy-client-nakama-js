@@ -62,6 +62,11 @@ export interface ApiAccountApple {
   // The ID token received from Apple to validate.
   token?: string;
 }
+/** Send a Amazon Sign In token to the server. Used with authenticate/link/unlink. */
+export interface ApiAccountAmazon {
+  // The ID token received from Amazon to validate.
+  token?: string;
+}
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountCustom {
   // A custom identifier.
@@ -467,6 +472,8 @@ export interface ApiUpdateGroupRequest {
 export interface ApiUser {
   // The Apple Sign In ID in the user's account.
   apple_id?: string;
+  // The Amazon Sign In ID in the user's account.
+  amazon_id?: string;
   // A URL for an avatar image.
   avatar_url?: string;
   // The UNIX time when the user was created.
@@ -668,6 +675,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Authenticate a user with an Amazon ID against the server. */
+    authenticateAmazon(body: ApiAccountAmazon, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/amazon";
+
+      const queryParams = {
+        create: create,
+        username: username,
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
@@ -803,6 +827,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Add an Amazon ID to the social profiles on the current user's account. */
+    linkAmazon(body: ApiAccountAmazon, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/amazon";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Add a custom ID to the social profiles on the current user's account. */
     linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
@@ -915,6 +954,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/unlink/apple";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Remove the Amazon ID from the social profiles on the current user's account. */
+    unlinkAmazon(body: ApiAccountAmazon, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/amazon";
 
       const queryParams = {
       } as any;

@@ -34,6 +34,9 @@ export interface ApiAccount {
 export interface ApiAccountApple {
     token?: string;
 }
+export interface ApiAccountAmazon {
+    token?: string;
+}
 export interface ApiAccountCustom {
     id?: string;
 }
@@ -255,6 +258,7 @@ export interface ApiUpdateGroupRequest {
 }
 export interface ApiUser {
     apple_id?: string;
+    amazon_id?: string;
     avatar_url?: string;
     create_time?: string;
     display_name?: string;
@@ -305,6 +309,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     getAccount(options?: any): Promise<ApiAccount>;
     updateAccount(body: ApiUpdateAccountRequest, options?: any): Promise<any>;
     authenticateApple(body: ApiAccountApple, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
+    authenticateAmazon(body: ApiAccountAmazon, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateCustom(body: ApiAccountCustom, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateDevice(body: ApiAccountDevice, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateEmail(body: ApiAccountEmail, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
@@ -313,6 +318,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateSteam(body: ApiAccountSteam, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     linkApple(body: ApiAccountApple, options?: any): Promise<any>;
+    linkAmazon(body: ApiAccountAmazon, options?: any): Promise<any>;
     linkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     linkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     linkEmail(body: ApiAccountEmail, options?: any): Promise<any>;
@@ -321,6 +327,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     linkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
     unlinkApple(body: ApiAccountApple, options?: any): Promise<any>;
+    unlinkAmazon(body: ApiAccountAmazon, options?: any): Promise<any>;
     unlinkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     unlinkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     unlinkEmail(body: ApiAccountEmail, options?: any): Promise<any>;

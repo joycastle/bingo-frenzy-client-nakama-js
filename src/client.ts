@@ -21,6 +21,7 @@ import {
   ApiAccountEmail,
   ApiAccountFacebook,
   ApiAccountApple,
+  ApiAccountAmazon,
   ApiAccountGoogle,
   ApiAccountGameCenter,
   ApiAccountSteam,
@@ -104,6 +105,12 @@ export interface AccountFacebook {
 /** Send a Apple token to the server. Used with authenticate. */
 export interface AccountApple {
   // The token received from Apple to access their API.
+  token: string;
+}
+
+/** Send a Amazon token to the server. Used with authenticate. */
+export interface AccountAmazon {
+  // The token received from Amazon to access their API.
   token: string;
 }
 
@@ -371,6 +378,8 @@ export interface User {
   facebook_id?: string;
   // The Apple id in the user's account.
   apple_id?: string;
+  // The Amazon id in the user's account.
+  amazon_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
@@ -944,6 +953,64 @@ export class Client {
     });
   }
 
+  /** Authenticate a user with a Amazon OAuth token against the server. */
+  authenticateAmazon(request: AccountAmazon): Promise<Session> {
+    const urlPath = "/v2/account/authenticate/amazon";
+
+    const queryParams = {
+      token: request.token,
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+    fetchOptions.body = JSON.stringify({
+      token: request.token,
+    });
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          return response.json().then((json) => {
+            throw new Error(JSON.stringify({
+              status: response.status,
+              statusText: response.statusText,
+              data: json,
+            }));
+          });
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
+      ),
+    ]).then((apiSession) => {
+      return Session.restore(apiSession.token || "");
+    });
+  }
+
   /** Authenticate a user with Google against the server. */
   authenticateGoogle(request: AccountGoogle): Promise<Session> {
     const urlPath = "/v2/account/authenticate/google";
@@ -1381,6 +1448,7 @@ export class Client {
           edge_count: u.edge_count ? Number(u.edge_count) : 0,
           facebook_id: u.facebook_id,
           apple_id: u.apple_id,
+          amazon_id: u.amazon_id,
           gamecenter_id: u.gamecenter_id,
           google_id: u.google_id,
           id: u.id,
@@ -1654,6 +1722,14 @@ export class Client {
   linkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkApple(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Add Amazon to the social profiles on the current user's account. */
+  linkAmazon(session: Session, request: ApiAccountAmazon): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.linkAmazon(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2179,6 +2255,14 @@ export class Client {
   unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkApple(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Remove Amazon from the social profiles on the current user's account. */
+  unlinkAmazon(session: Session, request: ApiAccountAmazon): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.unlinkAmazon(request).then((response: any) => {
       return response !== undefined;
     });
   }
