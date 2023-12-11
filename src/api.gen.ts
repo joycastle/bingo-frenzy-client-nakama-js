@@ -9,6 +9,7 @@ export interface ConfigurationParameters {
   password?: string;
   bearerToken?: string;
   timeoutMs?: number;
+  nkService?: string;
 }
 /** A single user-role pair. */
 export interface GroupUserListGroupUser {
@@ -566,6 +567,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   const napi = {
     /** Perform the underlying Fetch operation and return Promise object **/
     doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
+      queryParams.nk_service = configuration.nkService;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
           if (queryParams[k] instanceof Array) {

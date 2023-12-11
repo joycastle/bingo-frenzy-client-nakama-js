@@ -526,7 +526,8 @@ export class Client {
       readonly host = DEFAULT_HOST,
       readonly port = DEFAULT_PORT,
       readonly useSSL = false,
-      readonly timeout = DEFAULT_TIMEOUT_MS) {
+      readonly timeout = DEFAULT_TIMEOUT_MS,
+      readonly nkService = "default") {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
     this.configuration = {
@@ -534,6 +535,7 @@ export class Client {
       username: serverkey,
       password: "",
       timeoutMs: timeout,
+      nkService: nkService,
     };
     this.apiClient = NakamaApi(this.configuration);
   }

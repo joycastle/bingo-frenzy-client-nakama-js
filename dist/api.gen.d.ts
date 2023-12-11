@@ -4,6 +4,7 @@ export interface ConfigurationParameters {
     password?: string;
     bearerToken?: string;
     timeoutMs?: number;
+    nkService?: string;
 }
 export interface GroupUserListGroupUser {
     state?: number;

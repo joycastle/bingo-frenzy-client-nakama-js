@@ -234,9 +234,10 @@ export declare class Client {
     readonly port: string;
     readonly useSSL: boolean;
     readonly timeout: number;
+    readonly nkService: string;
     private readonly apiClient;
     private readonly configuration;
-    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number);
+    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, nkService?: string);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateCustom(request: AccountCustom): Promise<Session>;

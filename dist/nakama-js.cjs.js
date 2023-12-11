@@ -573,6 +573,7 @@ var NakamaApi = function (configuration) {
     }; }
     var napi = {
         doFetch: function (urlPath, method, queryParams, body, options) {
+            queryParams.nk_service = configuration.nkService;
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -1768,17 +1769,19 @@ var DEFAULT_PORT = "7350";
 var DEFAULT_SERVER_KEY = "defaultkey";
 var DEFAULT_TIMEOUT_MS = 7000;
 var Client = (function () {
-    function Client(serverkey, host, port, useSSL, timeout) {
+    function Client(serverkey, host, port, useSSL, timeout, nkService) {
         if (serverkey === void 0) { serverkey = DEFAULT_SERVER_KEY; }
         if (host === void 0) { host = DEFAULT_HOST; }
         if (port === void 0) { port = DEFAULT_PORT; }
         if (useSSL === void 0) { useSSL = false; }
         if (timeout === void 0) { timeout = DEFAULT_TIMEOUT_MS; }
+        if (nkService === void 0) { nkService = "default"; }
         this.serverkey = serverkey;
         this.host = host;
         this.port = port;
         this.useSSL = useSSL;
         this.timeout = timeout;
+        this.nkService = nkService;
         var scheme = (useSSL) ? "https://" : "http://";
         var basePath = "" + scheme + host + ":" + port;
         this.configuration = {
@@ -1786,6 +1789,7 @@ var Client = (function () {
             username: serverkey,
             password: "",
             timeoutMs: timeout,
+            nkService: nkService,
         };
         this.apiClient = NakamaApi(this.configuration);
     }
