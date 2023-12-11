@@ -1485,7 +1485,7 @@
           ++this.nextCid;
           return cid;
       };
-      DefaultSocket.prototype.connect = function (session, createStatus, useBuffer, compressionThreshold) {
+      DefaultSocket.prototype.connect = function (session, createStatus, useBuffer, compressionThreshold, nkService) {
           var _this = this;
           if (createStatus === void 0) { createStatus = false; }
           if (useBuffer === void 0) { useBuffer = false; }
@@ -1496,7 +1496,7 @@
               return Promise.resolve(session);
           }
           var scheme = (this.useSSL) ? "wss://" : "ws://";
-          var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token) + "&format=" + (useBuffer ? "binary" : "json") + "&compression_threshold=" + compressionThreshold;
+          var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token) + "&format=" + (useBuffer ? "binary" : "json") + "&compression_threshold=" + compressionThreshold + "&nk_service=" + (nkService || "");
           var socket = new WebSocket(url);
           socket.binaryType = "arraybuffer";
           this.socket = socket;

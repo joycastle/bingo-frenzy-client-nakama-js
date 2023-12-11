@@ -211,7 +211,7 @@ export declare class DefaultSocket implements Socket {
     private recentRecvData;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
-    connect(session: Session, createStatus?: boolean, useBuffer?: boolean, compressionThreshold?: number): Promise<Session>;
+    connect(session: Session, createStatus?: boolean, useBuffer?: boolean, compressionThreshold?: number, nkService?: string): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
     ondisconnect(evt: CloseEvent): void;
     onerror(evt: Event): void;
