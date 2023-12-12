@@ -1796,6 +1796,7 @@ var Client = (function () {
         var queryParams = {
             user_ids: ids
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -1852,6 +1853,7 @@ var Client = (function () {
             ids: ids,
             usernames: usernames
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -1907,6 +1909,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -1962,6 +1965,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2017,6 +2021,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2074,6 +2079,7 @@ var Client = (function () {
             create: request.create,
             sync: false,
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2128,6 +2134,7 @@ var Client = (function () {
         var queryParams = {
             token: request.token,
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2182,6 +2189,7 @@ var Client = (function () {
         var queryParams = {
             token: request.token,
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2237,6 +2245,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2292,6 +2301,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2352,6 +2362,7 @@ var Client = (function () {
             username: request.username,
             create: request.create
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2408,6 +2419,7 @@ var Client = (function () {
             ids: ids,
             usernames: usernames
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2488,6 +2500,7 @@ var Client = (function () {
             ids: ids,
             usernames: usernames
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2549,6 +2562,7 @@ var Client = (function () {
         var queryParams = {
             ids: ids
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -2666,6 +2680,7 @@ var Client = (function () {
         var queryParams = {
             user_ids: ids
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {
@@ -3208,6 +3223,7 @@ var Client = (function () {
         var queryParams = {
             user_ids: ids
         };
+        queryParams.nk_service = this.configuration.nkService;
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
             if (queryParams[k] instanceof Array) {

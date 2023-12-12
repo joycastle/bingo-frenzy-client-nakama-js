@@ -549,6 +549,7 @@ export class Client {
     const queryParams = {
       user_ids: ids
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -609,6 +610,7 @@ export class Client {
       ids: ids,
       usernames: usernames
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -667,6 +669,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -726,6 +729,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -785,6 +789,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -846,6 +851,7 @@ export class Client {
       create: request.create,
       sync: false,
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -904,6 +910,7 @@ export class Client {
     const queryParams = {
       token: request.token,
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -962,6 +969,7 @@ export class Client {
     const queryParams = {
       token: request.token,
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1021,6 +1029,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1080,6 +1089,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1144,6 +1154,7 @@ export class Client {
       username: request.username,
       create: request.create
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1205,6 +1216,7 @@ export class Client {
       ids: ids,
       usernames: usernames
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1291,6 +1303,7 @@ export class Client {
       ids: ids,
       usernames: usernames
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1358,6 +1371,7 @@ export class Client {
     const queryParams = {
       ids: ids
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -1492,6 +1506,7 @@ export class Client {
     const queryParams = {
       user_ids: ids
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
@@ -2111,6 +2126,7 @@ export class Client {
     const queryParams = {
       user_ids: ids
     } as any;
+    queryParams.nk_service = this.configuration.nkService;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
         if (queryParams[k] instanceof Array) {
