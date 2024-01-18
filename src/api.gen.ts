@@ -68,6 +68,11 @@ export interface ApiAccountAmazon {
   // The ID token received from Amazon to validate.
   token?: string;
 }
+/** Send a FacebookIg Sign In token to the server. Used with authenticate/link/unlink. */
+export interface ApiAccountFacebookIg {
+  // The ID token received from FacebookIg to validate.
+  signature?: string;
+}
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountCustom {
   // A custom identifier.
@@ -475,6 +480,8 @@ export interface ApiUser {
   apple_id?: string;
   // The Amazon Sign In ID in the user's account.
   amazon_id?: string;
+  // The FacebookIg in the user's account.
+  facebook_ig_id?: string;
   // A URL for an avatar image.
   avatar_url?: string;
   // The UNIX time when the user was created.
@@ -485,8 +492,6 @@ export interface ApiUser {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
-  // The Facebook Instant Game ID in the user's account.
-  facebook_instant_game_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
@@ -694,6 +699,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Authenticate a user with an FacebookIg ID against the server. */
+    authenticateFacebookIg(body: ApiAccountFacebookIg, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/facebook_ig";
+
+      const queryParams = {
+        create: create,
+        username: username,
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
@@ -844,6 +866,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Add an FacebookIg ID to the social profiles on the current user's account. */
+    linkFacebookIg(body: ApiAccountFacebookIg, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/facebook_ig";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Add a custom ID to the social profiles on the current user's account. */
     linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
@@ -971,6 +1008,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/unlink/amazon";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Remove the FacebookIg ID from the social profiles on the current user's account. */
+    unlinkFacebookIg(body: ApiAccountFacebookIg, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/facebook_ig";
 
       const queryParams = {
       } as any;

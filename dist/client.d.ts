@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountApple, ApiAccountAmazon, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountApple, ApiAccountAmazon, ApiAccountFacebookIg, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface AccountCustom {
@@ -27,6 +27,9 @@ export interface AccountApple {
 }
 export interface AccountAmazon {
     token: string;
+}
+export interface AccountFacebookIg {
+    signature: string;
 }
 export interface AccountGameCenter {
     username?: string;
@@ -161,6 +164,7 @@ export interface User {
     facebook_id?: string;
     apple_id?: string;
     amazon_id?: string;
+    facebook_ig_id?: string;
     gamecenter_id?: string;
     google_id?: string;
     id?: string;
@@ -246,6 +250,7 @@ export declare class Client {
     authenticateFacebook(request: AccountFacebook): Promise<Session>;
     authenticateApple(request: AccountApple): Promise<Session>;
     authenticateAmazon(request: AccountAmazon): Promise<Session>;
+    authenticateFacebookIg(request: AccountFacebookIg): Promise<Session>;
     authenticateGoogle(request: AccountGoogle): Promise<Session>;
     authenticateGameCenter(request: AccountGameCenter): Promise<Session>;
     authenticateSteam(request: AccountSteam): Promise<Session>;
@@ -273,6 +278,7 @@ export declare class Client {
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     linkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     linkAmazon(session: Session, request: ApiAccountAmazon): Promise<boolean>;
+    linkFacebookIg(session: Session, request: ApiAccountFacebookIg): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
@@ -295,6 +301,7 @@ export declare class Client {
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     unlinkAmazon(session: Session, request: ApiAccountAmazon): Promise<boolean>;
+    unlinkFacebookIg(session: Session, request: ApiAccountFacebookIg): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
