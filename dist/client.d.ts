@@ -21,6 +21,7 @@ export interface AccountFacebook {
     username?: string;
     create?: boolean;
     token?: string;
+    id_token?: string;
 }
 export interface AccountApple {
     token: string;

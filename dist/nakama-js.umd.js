@@ -2145,6 +2145,7 @@
           fetchOptions.headers = __assign({}, headers);
           fetchOptions.body = JSON.stringify({
               token: request.token,
+              id_token: request.id_token,
           });
           return Promise.race([
               fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {

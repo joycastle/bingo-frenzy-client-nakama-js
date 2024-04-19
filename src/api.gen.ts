@@ -94,6 +94,7 @@ export interface ApiAccountEmail {
 export interface ApiAccountFacebook {
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+  id_token?: string;
 }
 /** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountGameCenter {

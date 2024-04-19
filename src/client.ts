@@ -101,6 +101,7 @@ export interface AccountFacebook {
   create?: boolean;
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+  id_token?: string;
 }
 
 /** Send a Apple token to the server. Used with authenticate. */
@@ -888,6 +889,7 @@ export class Client {
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
       token: request.token,
+      id_token: request.id_token,
     });
 
     return Promise.race([

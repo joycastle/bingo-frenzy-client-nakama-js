@@ -53,6 +53,7 @@ export interface ApiAccountEmail {
 }
 export interface ApiAccountFacebook {
     token?: string;
+    id_token?: string;
 }
 export interface ApiAccountGameCenter {
     bundle_id?: string;
