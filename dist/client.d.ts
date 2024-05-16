@@ -11,6 +11,14 @@ export interface AccountDevice {
     create?: boolean;
     id?: string;
 }
+export interface AccountFacebookTransfer {
+    platform: string;
+    token: string;
+    asid?: string;
+}
+export interface AccountFacebookTransferResp {
+    device_id?: string;
+}
 export interface AccountEmail {
     username?: string;
     create?: boolean;
@@ -247,6 +255,7 @@ export declare class Client {
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateCustom(request: AccountCustom): Promise<Session>;
     authenticateDevice(request: AccountDevice): Promise<Session>;
+    transferFacebook(request: AccountFacebookTransfer): Promise<AccountFacebookTransferResp>;
     authenticateEmail(request: AccountEmail): Promise<Session>;
     authenticateFacebook(request: AccountFacebook): Promise<Session>;
     authenticateApple(request: AccountApple): Promise<Session>;

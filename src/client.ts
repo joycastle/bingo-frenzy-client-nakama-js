@@ -81,6 +81,16 @@ export interface AccountDevice {
   id?: string;
 }
 
+export interface AccountFacebookTransfer {
+  platform: string;
+  token: string;
+  asid?: string;
+}
+
+export interface AccountFacebookTransferResp {
+  device_id?: string;
+}
+
 /** Send an email with password to the server. Used with authenticate. */
 export interface AccountEmail {
   // Set a username when the account is created, otherwise the server will generate one.
@@ -789,6 +799,64 @@ export class Client {
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
+  }
+
+  /** Authenticate a user with a device id against the server. */
+  transferFacebook(request: AccountFacebookTransfer): Promise<AccountFacebookTransferResp> {
+    const urlPath = "/v2/account/facebook/transfer";
+
+    const queryParams = {
+    } as any;
+    queryParams.nk_service = this.configuration.nkService;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+    fetchOptions.body = JSON.stringify({
+      platform: request.platform,
+      token: request.token,
+      asid: request.asid
+    });
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          return response.json().then((json) => {
+            throw new Error(JSON.stringify({
+              status: response.status,
+              statusText: response.statusText,
+              data: json,
+            }));
+          });
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
+      ),
+    ]);
   }
 
   /** Authenticate a user with an email+password against the server. */

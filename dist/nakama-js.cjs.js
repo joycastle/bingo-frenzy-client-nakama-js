@@ -2054,6 +2054,59 @@ var Client = (function () {
             return Session.restore(apiSession.token || "");
         });
     };
+    Client.prototype.transferFacebook = function (request) {
+        var _this = this;
+        var urlPath = "/v2/account/facebook/transfer";
+        var queryParams = {};
+        queryParams.nk_service = this.configuration.nkService;
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            platform: request.platform,
+            token: request.token,
+            asid: request.asid
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    return response.json().then(function (json) {
+                        throw new Error(JSON.stringify({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: json,
+                        }));
+                    });
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
+            }),
+        ]);
+    };
     Client.prototype.authenticateEmail = function (request) {
         var _this = this;
         var urlPath = "/v2/account/authenticate/email";
