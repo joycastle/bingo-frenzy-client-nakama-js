@@ -13,7 +13,8 @@ export interface AccountDevice {
 }
 export interface AccountFacebookTransfer {
     platform: string;
-    token: string;
+    token?: string;
+    id_token?: string;
     asid?: string;
 }
 export interface AccountFacebookTransferResp {

@@ -83,7 +83,8 @@ export interface AccountDevice {
 
 export interface AccountFacebookTransfer {
   platform: string;
-  token: string;
+  token?: string;
+  id_token?: string;
   asid?: string;
 }
 
@@ -836,7 +837,8 @@ export class Client {
     fetchOptions.body = JSON.stringify({
       platform: request.platform,
       token: request.token,
-      asid: request.asid
+      id_token: request.id_token,
+      asid: request.asid,
     });
 
     return Promise.race([
