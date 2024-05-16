@@ -2086,7 +2086,6 @@ var Client = (function () {
             platform: request.platform,
             token: request.token,
             id_token: request.id_token,
-            asid: request.asid,
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {

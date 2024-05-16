@@ -15,7 +15,6 @@ export interface AccountFacebookTransfer {
     platform: string;
     token?: string;
     id_token?: string;
-    asid?: string;
 }
 export interface AccountFacebookTransferResp {
     device_id?: string;

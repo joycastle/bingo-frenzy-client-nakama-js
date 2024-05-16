@@ -85,7 +85,6 @@ export interface AccountFacebookTransfer {
   platform: string;
   token?: string;
   id_token?: string;
-  asid?: string;
 }
 
 export interface AccountFacebookTransferResp {
@@ -838,7 +837,6 @@ export class Client {
       platform: request.platform,
       token: request.token,
       id_token: request.id_token,
-      asid: request.asid,
     });
 
     return Promise.race([
