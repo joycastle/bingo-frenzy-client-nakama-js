@@ -324,7 +324,7 @@ export class DefaultSocket implements Socket {
     return cid;
   }
 
-  connect(session: Session, createStatus: boolean = false, useBuffer: boolean = false, compressionThreshold: number = 500, nkService?: string): Promise<Session> {
+  connect(session: Session, createStatus: boolean = false, useBuffer: boolean = false, compressionThreshold: number = 500, nkService?: string, sessionId?: string): Promise<Session> {
     this.useBuffer = useBuffer;
     this.compressionThreshold = compressionThreshold;
     if (this.socket !== undefined && this.socket.readyState === 1) {
@@ -332,7 +332,10 @@ export class DefaultSocket implements Socket {
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}&format=${useBuffer ? "binary" : "json"}&compression_threshold=${compressionThreshold}&nk_service=${nkService || ""}`;
+    let url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}&format=${useBuffer ? "binary" : "json"}&compression_threshold=${compressionThreshold}&nk_service=${nkService || ""}`;
+    if (sessionId) {
+      url += `&session_id=${sessionId}`;
+    }
     const socket = new WebSocket(url);
     socket.binaryType = "arraybuffer";
     this.socket = socket;
