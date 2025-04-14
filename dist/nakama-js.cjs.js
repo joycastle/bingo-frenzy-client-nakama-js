@@ -1479,17 +1479,18 @@ var NakamaApi = function (configuration) {
 };
 
 var Session = (function () {
-    function Session(token, created_at, expires_at, username, user_id) {
+    function Session(token, created_at, expires_at, username, user_id, created) {
         this.token = token;
         this.created_at = created_at;
         this.expires_at = expires_at;
         this.username = username;
         this.user_id = user_id;
+        this.created = created;
     }
     Session.prototype.isexpired = function (currenttime) {
         return (this.expires_at - currenttime) < 0;
     };
-    Session.restore = function (jwt) {
+    Session.restore = function (jwt, created) {
         var createdAt = Math.floor(new Date().getTime() / 1000);
         var parts = jwt.split('.');
         if (parts.length != 3) {
@@ -1497,7 +1498,7 @@ var Session = (function () {
         }
         var decoded = JSON.parse(atob(parts[1]));
         var expiresAt = Math.floor(parseInt(decoded['exp']));
-        return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid']);
+        return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], created);
     };
     return Session;
 }());
@@ -1998,7 +1999,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateDevice = function (request) {
@@ -2054,7 +2055,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.transferFacebook = function (request) {
@@ -2164,7 +2165,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateFacebook = function (request) {
@@ -2222,7 +2223,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateApple = function (request) {
@@ -2277,7 +2278,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateAmazon = function (request) {
@@ -2332,7 +2333,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateFacebookIg = function (request) {
@@ -2387,7 +2388,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateGoogle = function (request) {
@@ -2443,7 +2444,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateGameCenter = function (request) {
@@ -2504,7 +2505,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.authenticateSteam = function (request) {
@@ -2560,7 +2561,7 @@ var Client = (function () {
                 return setTimeout(reject, _this.configuration.timeoutMs, new Error("Request timed out."));
             }),
         ]).then(function (apiSession) {
-            return Session.restore(apiSession.token || "");
+            return Session.restore(apiSession.token || "", apiSession.created || false);
         });
     };
     Client.prototype.blockFriends = function (session, ids, usernames) {

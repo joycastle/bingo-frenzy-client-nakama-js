@@ -737,7 +737,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -797,7 +797,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -916,7 +916,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -978,7 +978,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1037,7 +1037,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1096,7 +1096,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1155,7 +1155,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1215,7 +1215,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1280,7 +1280,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 
@@ -1340,7 +1340,7 @@ export class Client {
         setTimeout(reject, this.configuration.timeoutMs, new Error("Request timed out."))
       ),
     ]).then((apiSession) => {
-      return Session.restore(apiSession.token || "");
+      return Session.restore(apiSession.token || "", apiSession.created || false);
     });
   }
 

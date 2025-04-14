@@ -20,14 +20,16 @@ export class Session {
     readonly created_at: number,
     readonly expires_at: number,
     readonly username: string,
-    readonly user_id: string) {
+    readonly user_id: string,
+    readonly created: boolean,
+  ) {
   }
 
   isexpired(currenttime: number): boolean {
     return (this.expires_at - currenttime) < 0;
   }
 
-  static restore(jwt: string): Session {
+  static restore(jwt: string, created: boolean): Session {
     const createdAt = Math.floor(new Date().getTime() / 1000);
     const parts = jwt.split('.');
     if (parts.length != 3) {
@@ -36,6 +38,6 @@ export class Session {
     const decoded = JSON.parse(atob(parts[1])); // FIXME: use base64 polyfill for React Native.
     const expiresAt = Math.floor(parseInt(decoded['exp']));
 
-    return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid']);
+    return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], created);
   }
 }
