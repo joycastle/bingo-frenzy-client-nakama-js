@@ -459,6 +459,8 @@ export interface ApiUpdateAccountRequest {
   timezone?: string;
   // The username of the user's account.
   username?: string;
+  // The avatar id
+  avatar_id?: string;
 }
 /** Update fields in a given group. */
 export interface ApiUpdateGroupRequest {
