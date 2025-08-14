@@ -252,6 +252,7 @@ export interface ApiUpdateAccountRequest {
     location?: string;
     timezone?: string;
     username?: string;
+    avatar_id?: string;
 }
 export interface ApiUpdateGroupRequest {
     avatar_url?: string;
